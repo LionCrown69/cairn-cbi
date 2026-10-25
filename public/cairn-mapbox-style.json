@@ -1,0 +1,315 @@
+{
+  "version": 8,
+  "name": "CAIRN Tactical Alpine 3D",
+  "metadata": {
+    "mapbox:autocomposite": true,
+    "mapbox:type": "template",
+    "description": "Tactical dark-mode 3D terrain style with hillshading, atmospheric haze, and embedded CAIRN alpine mesh communication stations."
+  },
+  "center": [8.4912, 46.49],
+  "zoom": 12.2,
+  "bearing": -18,
+  "pitch": 55,
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "sprite": "mapbox://sprites/mapbox/dark-v11",
+  "sources": {
+    "mapbox-dem": {
+      "type": "raster-dem",
+      "url": "mapbox://mapbox.mapbox-terrain-dem-v1",
+      "tileSize": 512,
+      "maxzoom": 14
+    },
+    "cairn-mesh-stations": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "id": "node-cmd",
+              "callsign": "BASE-COMMAND",
+              "role": "command",
+              "elevation": "2,038m",
+              "status": "online",
+              "color": "#D4F53C"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [8.5432, 46.5218]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "id": "node-relay-1",
+              "callsign": "RELAY-RIDGE-NORTH",
+              "role": "relay",
+              "elevation": "2,842m",
+              "status": "online",
+              "color": "#D4F53C"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [8.512, 46.5054]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "id": "node-relay-2",
+              "callsign": "RELAY-SADDLE-WEST",
+              "role": "relay",
+              "elevation": "2,618m",
+              "status": "online",
+              "color": "#D4F53C"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [8.4751, 46.4882]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "id": "node-alpha",
+              "callsign": "PATROL-ALPHA",
+              "role": "field_team",
+              "elevation": "2,110m",
+              "status": "online",
+              "color": "#D4F53C"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [8.438, 46.4621]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "id": "node-bravo",
+              "callsign": "PATROL-BRAVO",
+              "role": "field_team",
+              "elevation": "2,294m",
+              "status": "online",
+              "color": "#D4F53C"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [8.5298, 46.4795]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "id": "node-weather-1",
+              "callsign": "SENSOR-COL",
+              "role": "sensor",
+              "elevation": "3,048m",
+              "status": "online",
+              "color": "#D4F53C"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [8.4912, 46.4588]
+            }
+          }
+        ]
+      }
+    },
+    "cairn-mesh-links": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "type": "active_route",
+              "status": "delivered_path",
+              "color": "#FF8A3D",
+              "dash": [6, 4]
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [8.438, 46.4621],
+                [8.4751, 46.4882],
+                [8.512, 46.5054],
+                [8.5432, 46.5218]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "type": "secondary_link",
+              "status": "online",
+              "color": "#D4F53C",
+              "dash": [1, 0]
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [8.4912, 46.4588],
+                [8.5298, 46.4795],
+                [8.5432, 46.5218]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "type": "severed_los",
+              "status": "severed",
+              "color": "#525946",
+              "dash": [3, 3]
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [8.438, 46.4621],
+                [8.5432, 46.5218]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "terrain": {
+    "source": "mapbox-dem",
+    "exaggeration": 1.45
+  },
+  "fog": {
+    "range": [0.8, 8.0],
+    "color": "#0E120A",
+    "horizon-blend": 0.15,
+    "high-color": "#2A3320",
+    "space-color": "#0C0F08",
+    "star-intensity": 0.2
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#0E120A"
+      }
+    },
+    {
+      "id": "hillshading",
+      "type": "hillshade",
+      "source": "mapbox-dem",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "hillshade-exaggeration": 0.75,
+        "hillshade-shadow-color": "#0C0F08",
+        "hillshade-highlight-color": "#4A5A2A",
+        "hillshade-accent-color": "#2A3320",
+        "hillshade-illumination-direction": 315,
+        "hillshade-illumination-anchor": "viewport"
+      }
+    },
+    {
+      "id": "cairn-links-severed",
+      "type": "line",
+      "source": "cairn-mesh-links",
+      "filter": ["==", "status", "severed"],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#525946",
+        "line-width": 1.5,
+        "line-dasharray": [2, 2],
+        "line-opacity": 0.65
+      }
+    },
+    {
+      "id": "cairn-links-online",
+      "type": "line",
+      "source": "cairn-mesh-links",
+      "filter": ["==", "status", "online"],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#D4F53C",
+        "line-width": 2.2,
+        "line-opacity": 0.85
+      }
+    },
+    {
+      "id": "cairn-links-route",
+      "type": "line",
+      "source": "cairn-mesh-links",
+      "filter": ["==", "status", "delivered_path"],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#FF8A3D",
+        "line-width": 3.5,
+        "line-dasharray": [4, 2],
+        "line-opacity": 0.95
+      }
+    },
+    {
+      "id": "cairn-nodes-glow",
+      "type": "circle",
+      "source": "cairn-mesh-stations",
+      "paint": {
+        "circle-radius": 14,
+        "circle-color": "#D4F53C",
+        "circle-opacity": 0.25,
+        "circle-blur": 0.7
+      }
+    },
+    {
+      "id": "cairn-nodes-outer",
+      "type": "circle",
+      "source": "cairn-mesh-stations",
+      "paint": {
+        "circle-radius": 7,
+        "circle-color": "#1B1F16",
+        "circle-stroke-color": "#D4F53C",
+        "circle-stroke-width": 2
+      }
+    },
+    {
+      "id": "cairn-nodes-core",
+      "type": "circle",
+      "source": "cairn-mesh-stations",
+      "paint": {
+        "circle-radius": 3,
+        "circle-color": "#FFFFFF"
+      }
+    },
+    {
+      "id": "cairn-nodes-callsign",
+      "type": "symbol",
+      "source": "cairn-mesh-stations",
+      "layout": {
+        "text-field": ["concat", ["get", "callsign"], "\n", ["get", "elevation"]],
+        "text-font": ["DIN Pro Bold", "Arial Unicode MS Bold"],
+        "text-size": 10,
+        "text-offset": [0, 1.8],
+        "text-anchor": "top",
+        "text-justify": "center",
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.08
+      },
+      "paint": {
+        "text-color": "#F1F0EA",
+        "text-halo-color": "#0E120A",
+        "text-halo-width": 2.5
+      }
+    }
+  ]
+}

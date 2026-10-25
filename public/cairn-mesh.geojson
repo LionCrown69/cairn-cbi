@@ -1,0 +1,134 @@
+{
+  "type": "FeatureCollection",
+  "name": "CAIRN_Alpine_Mesh_Sector_04",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "node-cmd",
+        "callsign": "BASE-COMMAND",
+        "role": "command",
+        "elevation_m": 2038,
+        "antenna_height_m": 10.0,
+        "battery_pct": 98,
+        "status": "online",
+        "provenance": "observed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.5432, 46.5218, 2038]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "node-relay-1",
+        "callsign": "RELAY-RIDGE-NORTH",
+        "role": "relay",
+        "elevation_m": 2842,
+        "antenna_height_m": 6.0,
+        "battery_pct": 84,
+        "status": "online",
+        "provenance": "observed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.5120, 46.5054, 2842]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "node-relay-2",
+        "callsign": "RELAY-SADDLE-WEST",
+        "role": "relay",
+        "elevation_m": 2618,
+        "antenna_height_m": 5.0,
+        "battery_pct": 79,
+        "status": "online",
+        "provenance": "observed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.4751, 46.4882, 2618]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "node-alpha",
+        "callsign": "PATROL-ALPHA",
+        "role": "field_team",
+        "elevation_m": 2110,
+        "antenna_height_m": 2.5,
+        "battery_pct": 68,
+        "status": "online",
+        "provenance": "observed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.4380, 46.4621, 2110]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "node-bravo",
+        "callsign": "PATROL-BRAVO",
+        "role": "field_team",
+        "elevation_m": 2294,
+        "antenna_height_m": 2.5,
+        "battery_pct": 91,
+        "status": "online",
+        "provenance": "observed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.5298, 46.4795, 2294]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "node-weather-1",
+        "callsign": "SENSOR-COL",
+        "role": "sensor",
+        "elevation_m": 3048,
+        "antenna_height_m": 3.5,
+        "battery_pct": 88,
+        "status": "online",
+        "provenance": "observed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.4912, 46.4588, 3048]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "link-route-active",
+        "description": "Multi-hop store-and-forward route from PATROL-ALPHA to BASE-COMMAND",
+        "hops": 3,
+        "total_distance_km": 12.52,
+        "status": "online",
+        "provenance": "derived"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [8.4380, 46.4621, 2110],
+          [8.4751, 46.4882, 2618],
+          [8.5120, 46.5054, 2842],
+          [8.5432, 46.5218, 2038]
+        ]
+      }
+    }
+  ]
+}

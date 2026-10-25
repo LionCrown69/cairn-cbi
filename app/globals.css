@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import 'mapbox-gl/dist/mapbox-gl.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cairn-deep-ground: #0E120A;
+  --cairn-ground: #1B1F16;
+  --cairn-surface: #252A1E;
+  --cairn-ink: #F1F0EA;
+  --cairn-mute: #A4A99A;
+  --cairn-signal: #D4F53C;
+  --cairn-caution: #FF8A3D;
+  --cairn-line: #3A4030;
+  --cairn-severed: #525946;
+
+  --gradient-sky-haze: linear-gradient(180deg, #0C0F08 0%, #2A3320 38%, #6E7A3A 75%, #C9D96A 100%);
+  --gradient-glass: linear-gradient(180deg, rgba(37, 42, 30, 0.85) 0%, rgba(27, 31, 22, 0.95) 100%);
+}
+
+body {
+  background-color: var(--cairn-deep-ground);
+  color: var(--cairn-ink);
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glass panel with 1px engineered border */
+.cairn-glass {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--cairn-line);
+}
+
+.cairn-glass-subtle {
+  background: rgba(27, 31, 22, 0.7);
+  border: 1px solid rgba(58, 64, 48, 0.6);
+}
+
+/* High-contrast status badges */
+.badge-observed {
+  background: rgba(255, 138, 61, 0.15);
+  border: 1px solid var(--cairn-caution);
+  color: var(--cairn-caution);
+}
+
+.badge-estimated {
+  background: rgba(212, 245, 60, 0.12);
+  border: 1px solid var(--cairn-signal);
+  color: var(--cairn-signal);
+}
+
+.badge-simulated {
+  background: rgba(164, 169, 154, 0.12);
+  border: 1px solid var(--cairn-mute);
+  color: var(--cairn-mute);
+}
+
+.badge-derived {
+  background: rgba(100, 150, 255, 0.12);
+  border: 1px solid #739AF0;
+  color: #739AF0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cairn-deep-ground);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cairn-line);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cairn-mute);
+}
+
+/* Accessible focus ring */
+*:focus-visible {
+  outline: 2px solid var(--cairn-signal);
+  outline-offset: 2px;
+}

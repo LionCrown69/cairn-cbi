@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "CAIRN",
+  "version": "1.0.0",
+  "description": "Synthetic alpine mesh scenario, digital elevation model configuration, telemetry stations, and store-and-forward packet log.",
+  "classification": "SYNTHETIC SCENARIO ONLY · ZERO OPERATIONAL CAPABILITY CLAIMED",
+  "metadata": {
+    "sector": "Sector 04 — Valais Alps (Synthetic Grid)",
+    "crs": "EPSG:4326 (WGS84) / Local Cartesian",
+    "bounds": {
+      "minLat": 46.44,
+      "maxLat": 46.54,
+      "minLon": 8.42,
+      "maxLon": 8.56
+    },
+    "gridDimensionsKm": {
+      "widthKm": 14.0,
+      "heightKm": 13.0
+    },
+    "rfParameters": {
+      "frequencyBand": "915 MHz ISM",
+      "defaultTxPowerDbm": 20,
+      "maxTxPowerDbm": 27,
+      "rxSensitivityDbm": -124,
+      "maxRadioRangeKm": 9.0
+    }
+  },
+  "terrainModel": {
+    "type": "procedural_dem",
+    "baseElevationM": 1950,
+    "maxElevationM": 3200,
+    "formula": "1950 + 1100*cos(0.32x + 0.18y)^2 + 550*sin(0.48y - 0.28x)*cos(0.25x) + 180*sin(1.15x + 0.65y)*cos(1.05y - 0.75x)",
+    "resolutionM": 10.0,
+    "provenance": "simulated"
+  },
+  "designTokens": {
+    "colors": {
+      "ground": "#1B1F16",
+      "deepGround": "#0E120A",
+      "surface": "#252A1E",
+      "line": "#3A4030",
+      "ink": "#F1F0EA",
+      "mute": "#A4A99A",
+      "signal": "#D4F53C",
+      "caution": "#FF8A3D",
+      "severed": "#525946"
+    },
+    "typography": {
+      "display": "Big Shoulders Display",
+      "body": "Space Grotesk",
+      "mono": "JetBrains Mono"
+    }
+  },
+  "nodes": [
+    {
+      "id": "node-cmd",
+      "callsign": "BASE-COMMAND",
+      "role": "command",
+      "x": 5.2,
+      "y": 4.8,
+      "coordinates": {
+        "latitude": 46.5218,
+        "longitude": 8.5432,
+        "elevationM": 2038
+      },
+      "hardware": {
+        "antennaHeightM": 10.0,
+        "batteryPct": 98,
+        "txPowerDbm": 27,
+        "status": "online"
+      },
+      "provenance": "observed"
+    },
+    {
+      "id": "node-relay-1",
+      "callsign": "RELAY-RIDGE-NORTH",
+      "role": "relay",
+      "x": 2.1,
+      "y": 2.4,
+      "coordinates": {
+        "latitude": 46.5054,
+        "longitude": 8.5120,
+        "elevationM": 2842
+      },
+      "hardware": {
+        "antennaHeightM": 6.0,
+        "batteryPct": 84,
+        "txPowerDbm": 24,
+        "status": "online"
+      },
+      "provenance": "observed"
+    },
+    {
+      "id": "node-relay-2",
+      "callsign": "RELAY-SADDLE-WEST",
+      "role": "relay",
+      "x": -1.8,
+      "y": 0.5,
+      "coordinates": {
+        "latitude": 46.4882,
+        "longitude": 8.4751,
+        "elevationM": 2618
+      },
+      "hardware": {
+        "antennaHeightM": 5.0,
+        "batteryPct": 79,
+        "txPowerDbm": 24,
+        "status": "online"
+      },
+      "provenance": "observed"
+    },
+    {
+      "id": "node-alpha",
+      "callsign": "PATROL-ALPHA",
+      "role": "field_team",
+      "x": -4.5,
+      "y": -2.8,
+      "coordinates": {
+        "latitude": 46.4621,
+        "longitude": 8.4380,
+        "elevationM": 2110
+      },
+      "hardware": {
+        "antennaHeightM": 2.5,
+        "batteryPct": 68,
+        "txPowerDbm": 20,
+        "status": "online"
+      },
+      "provenance": "observed"
+    },
+    {
+      "id": "node-bravo",
+      "callsign": "PATROL-BRAVO",
+      "role": "field_team",
+      "x": 3.5,
+      "y": -1.2,
+      "coordinates": {
+        "latitude": 46.4795,
+        "longitude": 8.5298,
+        "elevationM": 2294
+      },
+      "hardware": {
+        "antennaHeightM": 2.5,
+        "batteryPct": 91,
+        "txPowerDbm": 20,
+        "status": "online"
+      },
+      "provenance": "observed"
+    },
+    {
+      "id": "node-weather-1",
+      "callsign": "SENSOR-COL",
+      "role": "sensor",
+      "x": 0.2,
+      "y": -3.5,
+      "coordinates": {
+        "latitude": 46.4588,
+        "longitude": 8.4912,
+        "elevationM": 3048
+      },
+      "hardware": {
+        "antennaHeightM": 3.5,
+        "batteryPct": 88,
+        "txPowerDbm": 14,
+        "status": "online"
+      },
+      "provenance": "observed"
+    }
+  ],
+  "links": [
+    {
+      "id": "link-node-relay-1-node-cmd",
+      "fromId": "node-relay-1",
+      "toId": "node-cmd",
+      "distanceKm": 3.92,
+      "status": "online",
+      "clearanceM": 64.2,
+      "lossMarginDb": 28,
+      "provenance": "estimated"
+    },
+    {
+      "id": "link-node-relay-2-node-relay-1",
+      "fromId": "node-relay-2",
+      "toId": "node-relay-1",
+      "distanceKm": 4.34,
+      "status": "online",
+      "clearanceM": 48.0,
+      "lossMarginDb": 26,
+      "provenance": "estimated"
+    },
+    {
+      "id": "link-node-alpha-node-relay-2",
+      "fromId": "node-alpha",
+      "toId": "node-relay-2",
+      "distanceKm": 4.26,
+      "status": "online",
+      "clearanceM": 32.5,
+      "lossMarginDb": 27,
+      "provenance": "estimated"
+    },
+    {
+      "id": "link-node-alpha-node-cmd",
+      "fromId": "node-alpha",
+      "toId": "node-cmd",
+      "distanceKm": 12.32,
+      "status": "severed",
+      "clearanceM": -184.5,
+      "lossMarginDb": 0,
+      "provenance": "estimated"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-01",
+      "fromId": "node-alpha",
+      "toId": "node-cmd",
+      "content": "Cirque ascent underway. Wind 22kt NW, light spindrift. All 4 members green.",
+      "status": "delivered",
+      "hops": ["node-alpha", "node-relay-2", "node-relay-1", "node-cmd"],
+      "priority": "routine",
+      "payloadBytes": 74,
+      "provenance": "observed"
+    },
+    {
+      "id": "msg-02",
+      "fromId": "node-weather-1",
+      "toId": "node-cmd",
+      "content": "Col anemometer telemetry: Baro 704hPa (-2.4hPa/3h), Temp -9.4C. Snowpack stable.",
+      "status": "delivered",
+      "hops": ["node-weather-1", "node-bravo", "node-cmd"],
+      "priority": "routine",
+      "payloadBytes": 86,
+      "provenance": "observed"
+    }
+  ]
+}
