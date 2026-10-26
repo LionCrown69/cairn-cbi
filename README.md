@@ -6,7 +6,7 @@
 [![Team](https://img.shields.io/badge/ENGINEERED_BY-TEAM_CBI-eab308?style=for-the-badge&logo=shield)](https://cairn-cbi.vercel.app/timeline)
 [![Submission](https://img.shields.io/badge/FINAL_SUBMISSION-26_OCT_·_04:00_PM-3b82f6?style=for-the-badge&logo=clock)](https://cairn-cbi.vercel.app/timeline)
 [![Pitching](https://img.shields.io/badge/PITCHING_ROUND-26_OCT_·_05:00_PM-8b5cf6?style=for-the-badge&logo=airplay)](https://cairn-cbi.vercel.app/timeline)
-[![Build Status](https://img.shields.io/badge/BUILD-100%25_PASSING-brightgreen?style=for-the-badge&logo=githubactions)](https://github.com/LionCrown69/fallingsun)
+[![Build Status](https://img.shields.io/badge/BUILD-100%25_PASSING-brightgreen?style=for-the-badge&logo=githubactions)](https://github.com/LionCrown69/cairn-cbi)
 
 <br/>
 
@@ -29,7 +29,7 @@
 | **Final Submission** | **26 Oct · 04:00 PM (16:00 IST) Sharp** |
 | **Pitching & Demo Round** | **26 Oct · 05:00 PM (17:00 IST) Sharp** |
 | **Production URL** | [https://cairn-cbi.vercel.app/](https://cairn-cbi.vercel.app/) |
-| **Repository** | [https://github.com/LionCrown69/fallingsun](https://github.com/LionCrown69/fallingsun) |
+| **Repository** | [https://github.com/LionCrown69/cairn-cbi](https://github.com/LionCrown69/cairn-cbi) |
 | **Active AI Core** | **Google Gemini 2.5 Flash** (Live reasoning, multi-tier directives, zero-hallucination guardrails) |
 | **3D Engine** | **Three.js + Draco Compressed Blender GLBs** (60 FPS with IntersectionObserver throttling) |
 | **Audio Engine** | **Web Audio API Procedural Synthesizer** (Sub-bass drone, beacon pings, tactical clicks) |
