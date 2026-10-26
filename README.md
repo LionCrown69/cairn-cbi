@@ -4,7 +4,8 @@
 
 [![Live Demo](https://img.shields.io/badge/LIVE_DEMO-cairn--cbi.vercel.app-10b981?style=for-the-badge&logo=vercel&logoColor=white)](https://cairn-cbi.vercel.app/)
 [![Team](https://img.shields.io/badge/ENGINEERED_BY-TEAM_CBI-eab308?style=for-the-badge&logo=shield)](https://cairn-cbi.vercel.app/timeline)
-[![Submission](https://img.shields.io/badge/FINAL_SUBMISSION-DAY_2_·_04:00_PM-3b82f6?style=for-the-badge&logo=clock)](https://cairn-cbi.vercel.app/timeline)
+[![Submission](https://img.shields.io/badge/FINAL_SUBMISSION-26_OCT_·_04:00_PM-3b82f6?style=for-the-badge&logo=clock)](https://cairn-cbi.vercel.app/timeline)
+[![Pitching](https://img.shields.io/badge/PITCHING_ROUND-26_OCT_·_05:00_PM-8b5cf6?style=for-the-badge&logo=airplay)](https://cairn-cbi.vercel.app/timeline)
 [![Build Status](https://img.shields.io/badge/BUILD-100%25_PASSING-brightgreen?style=for-the-badge&logo=githubactions)](https://github.com/LionCrown69/fallingsun)
 
 <br/>
@@ -24,7 +25,9 @@
 | Specification | Details |
 | :--- | :--- |
 | **Engineering Squad** | **Team CBI** |
-| **Final Submission Cut** | **Day 2 · 04:00 PM (16:00 IST) Sharp** |
+| **Development Window** | **25 Oct 12:00 PM (Kickoff) &rarr; 26 Oct 04:00 PM (Submission)** |
+| **Final Submission** | **26 Oct · 04:00 PM (16:00 IST) Sharp** |
+| **Pitching & Demo Round** | **26 Oct · 05:00 PM (17:00 IST) Sharp** |
 | **Production URL** | [https://cairn-cbi.vercel.app/](https://cairn-cbi.vercel.app/) |
 | **Repository** | [https://github.com/LionCrown69/fallingsun](https://github.com/LionCrown69/fallingsun) |
 | **Active AI Core** | **Google Gemini 2.5 Flash** (Live reasoning, multi-tier directives, zero-hallucination guardrails) |
@@ -79,24 +82,19 @@ Zero external MP3 dependencies. 100% procedurally synthesized in the browser usi
 ## ⏱️ The 48-Hour Sprint Chronicle
 
 ```
-DAY 1 · 12:00 PM  ──► Sprint Kickoff, Alpine RF Research & Ethical SAR Architecture
-DAY 1 · 03:00 PM  ──► Next.js 15 Full-Stack Foundation & Dexie IndexedDB Store
-DAY 1 · 06:00 PM  ──► Delay-Tolerant Store-and-Forward Mesh Protocol
+DAY 1 · 25 OCT
+  12:00 PM  ──► Sprint Check-in, Problem Statement Research & Alpine SAR Scoping
+  06:00 PM  ──► Intensive Engineering Kickoff: Next.js 15 & Store-and-Forward Mesh
+  08:00 PM  ──► 40-Step Procedural DEM Raycasting & Fresnel Clearance Algorithms
+  10:00 PM  ──► Day 1 Code Freeze & Overnight Stand-Down
 
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                   NIGHT OPERATIONS · THE CBI MIDNIGHT SPRINT                  ║
-║  22:30 ──► Blender 3D Sculpting & Draco GLB Compression (4 Massifs)           ║
-║  01:15 ──► Web Audio API Tactical Sound Synthesizer Engine                    ║
-║  03:45 ──► 40-Step DEM Raycasting Math & 60% Fresnel Zone Clearance           ║
-║  05:30 ──► 21st.dev iOS-Grade Minimalist Spatial HUD Overhaul                 ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-
-DAY 2 · 08:30 AM  ──► Morning Standup & Multi-Paradigmatic Lab Benchmarks
-DAY 2 · 11:00 AM  ──► Live Google Gemini 2.5 Flash Neural Integration
-DAY 2 · 01:15 PM  ──► Multi-Tier Tactical Directives & Non-Lethal Guardrails
-DAY 2 · 02:45 PM  ──► 4-Stage Animated Verification Pipeline & Full SITREP Reader
-DAY 2 · 03:30 PM  ──► 60 FPS WebGL Performance Profiling & Secret Scrubbing
-DAY 2 · 04:00 PM  ──► 🏆 FINAL SUBMISSION & PRODUCTION RELEASE BY TEAM CBI
+DAY 2 · 26 OCT
+  11:00 AM  ──► Day 2 Sprint Resumption: 4 Blender 3D GLB Terrains (Draco Compressed)
+  12:30 PM  ──► Live Google Gemini 2.5 Flash Neural Integration & Safety Guardrails
+  02:00 PM  ──► 4-Stage Animated Telemetry Pipeline & Web Audio API Synthesizer
+  03:30 PM  ──► 60 FPS WebGL Performance Profiling & Secret Scrubbing
+  04:00 PM  ──► 🏆 OFFICIAL FINAL SUBMISSION BY TEAM CBI (Vercel Release)
+  05:00 PM  ──► 🎤 OFFICIAL PITCHING & LIVE DEMONSTRATION ROUND
 ```
 
 ---

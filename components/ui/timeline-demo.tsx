@@ -3,25 +3,32 @@
 import React from "react";
 import Link from "next/link";
 import Timeline from "@/components/ui/timeline";
-import { ArrowRight, Radio, Sparkles, Trophy, Cpu, Mountain, ShieldCheck, Moon, Award } from "lucide-react";
+import { ArrowRight, Radio, Sparkles, Trophy, Cpu, Mountain, ShieldCheck, Clock, Award, Presentation } from "lucide-react";
 
 export default function TimelineDemo() {
   return (
     <main className="bg-deep-ground text-ink min-h-screen flex flex-col">
       {/* Lead-in Hero section */}
       <section className="pt-24 pb-16 px-6 sm:px-12 max-w-5xl mx-auto w-full text-center space-y-6 border-b border-white/[0.08]">
-        {/* Team CBI Official Submission Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-signal/15 border border-signal/40 text-xs font-mono text-signal uppercase tracking-widest mx-auto shadow-sm">
-          <Trophy className="w-3.5 h-3.5 text-signal" />
-          <span className="font-extrabold">TEAM CBI · FINAL SUBMISSION AT 04:00 PM (DAY 2)</span>
+        {/* Team CBI Official Submission & Pitch Badge */}
+        <div className="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-surface/80 border border-signal/40 text-xs font-mono uppercase tracking-wider mx-auto shadow-sm">
+          <span className="text-signal font-extrabold flex items-center gap-1.5">
+            <Trophy className="w-3.5 h-3.5" />
+            <span>SUBMISSION: 26 OCT · 04:00 PM</span>
+          </span>
+          <span className="text-white/20">|</span>
+          <span className="text-cyan-300 font-extrabold flex items-center gap-1.5">
+            <Presentation className="w-3.5 h-3.5" />
+            <span>PITCHING: 26 OCT · 05:00 PM</span>
+          </span>
         </div>
 
         <h1 className="max-w-4xl mx-auto text-4xl sm:text-6xl font-display font-extrabold uppercase tracking-tight text-ink">
-          The 48-Hour Sprint Chronicle.
+          The Engineering Chronicle.
         </h1>
 
         <p className="max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed text-mute font-sans">
-          Engineered by <strong className="text-ink">Team CBI</strong> from Day 1 research at 12:00 PM, through an intense overnight sprint (Blender 3D photogrammetric modeling & tactile Web Audio synthesis), to Day 2 live Google Gemini 2.5 Flash neural integration. Official submission cut at 04:00 PM sharp.
+          Engineered by <strong className="text-ink">Team CBI</strong> from initial intake at 12:00 PM and deep work kickoff at 06:00 PM on 25 October, through Day 2 morning resumption at 11:00 AM on 26 October, to official submission at 04:00 PM and pitching round at 05:00 PM.
         </p>
 
         {/* Quick Stat Highlights */}
@@ -34,27 +41,24 @@ export default function TimelineDemo() {
             </span>
           </div>
           <div className="p-4 rounded-2xl bg-surface/50 border border-white/[0.08] text-left">
-            <span className="text-[10px] font-mono text-mute uppercase block">Day 1 Kickoff</span>
+            <span className="text-[10px] font-mono text-mute uppercase block">25 Oct Kickoff</span>
             <span className="text-sm font-mono font-bold text-ink mt-0.5 block">12:00 PM Intake</span>
           </div>
-          <div className="p-4 rounded-2xl bg-surface/50 border border-white/[0.08] text-left">
-            <span className="text-[10px] font-mono text-cyan-300/80 uppercase block flex items-center gap-1">
-              <Moon className="w-2.5 h-2.5 text-cyan-300" />
-              <span>Night Sprint</span>
-            </span>
-            <span className="text-sm font-mono font-bold text-cyan-300 mt-0.5 block">22:30 – 06:00</span>
+          <div className="p-4 rounded-2xl bg-surface/50 border border-signal/40 text-left bg-signal/[0.04]">
+            <span className="text-[10px] font-mono text-signal uppercase block font-bold">Final Submission</span>
+            <span className="text-sm font-mono font-extrabold text-signal mt-0.5 block">26 Oct · 04:00 PM</span>
           </div>
-          <div className="p-4 rounded-2xl bg-surface/50 border border-signal/30 text-left bg-signal/[0.04]">
-            <span className="text-[10px] font-mono text-signal uppercase block font-bold">Final Cut (Day 2)</span>
-            <span className="text-sm font-mono font-extrabold text-signal mt-0.5 block">04:00 PM Sharp</span>
+          <div className="p-4 rounded-2xl bg-surface/50 border border-cyan-400/40 text-left bg-cyan-500/[0.04]">
+            <span className="text-[10px] font-mono text-cyan-300 uppercase block font-bold">Pitching Round</span>
+            <span className="text-sm font-mono font-extrabold text-cyan-300 mt-0.5 block">26 Oct · 05:00 PM</span>
           </div>
         </div>
       </section>
 
       {/* Main Interactive Timeline */}
       <Timeline
-        title="Team CBI Engineering Log"
-        subtitle="14 verified engineering milestones across Day 1, Night Operations, and Day 2. Filter by phase to inspect technical deliverables."
+        title="Team CBI Sprint Timeline"
+        subtitle="Chronological engineering milestones tracking research, 3D terrain modeling, Gemini 2.5 Flash AI, final submission at 04:00 PM, and pitching round at 05:00 PM."
         showDayFilters={true}
         initialDayFilter="all"
       />
@@ -70,7 +74,7 @@ export default function TimelineDemo() {
             Mission Accomplished.
           </h2>
           <p className="text-mute font-sans text-xs sm:text-sm max-w-2xl mx-auto">
-            14 technical milestones delivered across the 48-hour hackathon window by Team CBI. Submitted at 04:00 PM with 100% build pass rate, zero errors, and live operational demonstration.
+            10 key engineering milestones delivered across 25–26 October by Team CBI. Submitted at 04:00 PM with 100% build pass rate, zero errors, and live demonstration ready for the 05:00 PM pitch!
           </p>
         </div>
 

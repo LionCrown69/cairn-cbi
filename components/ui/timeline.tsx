@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { CheckCircle2, Moon, Sun, Sparkles, Trophy, Radio, Shield, Cpu, Clock, Layers } from 'lucide-react';
+import { CheckCircle2, Sun, Trophy, Radio, Shield, Cpu, Clock, Layers, Presentation, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { sound } from '@/lib/soundEffects';
 
 export type HackathonMilestone = {
   id: string;
-  day: 1 | 'night' | 2;
+  day: 1 | 2;
   dayBadge: string;
   time: string;
   isoTime: string;
@@ -15,198 +15,127 @@ export type HackathonMilestone = {
   title: string;
   summary: string;
   deliverables: string[];
-  status: 'completed' | 'verified' | 'submitted';
+  status: 'completed' | 'verified' | 'submitted' | 'upcoming';
   order: number;
   highlight?: boolean;
+  isPitch?: boolean;
 };
 
 export const HACKATHON_SPRINT_DATA: HackathonMilestone[] = [
-  // DAY 1 (Oct 25)
+  // DAY 1 (25 October)
   {
     id: 'd1-1200',
     day: 1,
-    dayBadge: 'DAY 1',
+    dayBadge: 'DAY 1 · 25 OCT',
     time: '12:00 PM',
     isoTime: '12:00',
     category: 'RESEARCH & INTAKE',
-    title: 'Sprint Kickoff, Telemetry Research & Domain Intake',
+    title: 'Sprint Check-in, Problem Research & Domain Scoping',
     summary:
-      'Team CBI joined the sprint at noon. Deep-dived into alpine search and rescue telemetry, radio occlusion physics in 3,000m granite couloirs, and high-stress command design patterns.',
+      'Team CBI joined the sprint at 12:00 PM on 25 October. Deep-dived into alpine search and rescue telemetry, radio occlusion physics in 3,000m granite couloirs, and high-stress command design patterns.',
     deliverables: ['Alpine RF Physics', 'Telemetry Study', 'Problem Scope', 'Team CBI Kickoff'],
     status: 'completed',
     order: 1,
   },
   {
-    id: 'd1-1330',
+    id: 'd1-1800',
     day: 1,
-    dayBadge: 'DAY 1',
-    time: '01:30 PM',
-    isoTime: '13:30',
-    category: 'IDENTITY & ETHICS',
-    title: 'Project CAIRN & Ethical SAR Architecture',
+    dayBadge: 'DAY 1 · 25 OCT',
+    time: '06:00 PM',
+    isoTime: '18:00',
+    category: 'SPRINT KICKOFF & ARCHITECTURE',
+    title: 'Deep Engineering Session & Offline Store-and-Forward Core',
     summary:
-      'Scoped mission purely around backcountry team coordination and mountain rescue. Formulated strict ethical boundaries: 100% peaceful offline mesh, strictly zero weapons scope.',
-    deliverables: ['Mission Architecture', '3 Operational Promises', 'Synthetic Scenario Spec'],
+      'Commenced intensive development at 6:00 PM. Bootstrapped Next.js 15 App router with TypeScript strict mode, Zustand reactive store with Dexie IndexedDB persistence, and the delay-tolerant packet buffering protocol.',
+    deliverables: ['Next.js 15 App Router', 'Zustand + Dexie Persistence', 'Store-and-Forward Protocol'],
     status: 'completed',
     order: 2,
   },
   {
-    id: 'd1-1500',
+    id: 'd1-2000',
     day: 1,
-    dayBadge: 'DAY 1',
-    time: '03:00 PM',
-    isoTime: '15:00',
-    category: 'ARCHITECTURE & STACK',
-    title: 'Full-Stack Foundation & Offline Persistence',
+    dayBadge: 'DAY 1 · 25 OCT',
+    time: '08:00 PM',
+    isoTime: '20:00',
+    category: '3D TERRAIN & FRESNEL MATH',
+    title: 'Procedural DEM Raycasting & Fresnel Clearance Algorithms',
     summary:
-      'Bootstrapped Next.js 15 App router with TypeScript strict mode, Tailwind CSS tactical tokens, Zustand reactive store with Dexie IndexedDB persistence, and Vitest test suite.',
-    deliverables: ['Next.js 15 App Router', 'Zustand + Dexie Store', 'TypeScript Strict Config'],
+      'Engineered procedural alpine DEM elevation model and 40-step ray clearance algorithm. Calculated knife-edge diffraction and 60% Fresnel zone clearance margins across mountain ridges.',
+    deliverables: ['40-Step DEM Raycasting', 'Fresnel Clearance Math', 'Topological Wireframe'],
     status: 'completed',
     order: 3,
   },
   {
-    id: 'd1-1800',
+    id: 'd1-2200',
     day: 1,
-    dayBadge: 'DAY 1',
-    time: '06:00 PM',
-    isoTime: '18:00',
-    category: 'STORE-AND-FORWARD MESH',
-    title: 'Delay-Tolerant Routing & Packet Buffers',
+    dayBadge: 'DAY 1 · 25 OCT',
+    time: '10:00 PM',
+    isoTime: '22:00',
+    category: 'DAY 1 WRAP & NIGHT STAND-DOWN',
+    title: 'Day 1 Code Wrap & Overnight Stand-Down',
     summary:
-      'Engineered offline-first packet relaying protocols. Implemented FIFO message queues with hop limits and dynamic node discovery to ensure zero packet drop across intermittent links.',
-    deliverables: ['Delay-Tolerant Protocol', 'FIFO Message Queues', 'Dynamic Hop Discovery'],
-    status: 'completed',
+      'Wrapped Day 1 engineering session at 10:00 PM with core mesh routing and DEM raycasting math verified. Nighttime stand-down in preparation for the Day 2 morning push.',
+    deliverables: ['Day 1 Code Freeze', 'Routing Core Verified', 'Night Stand-down'],
+    status: 'verified',
     order: 4,
   },
 
-  // NIGHT OPS (Overnight Oct 25-26 - The CBI Midnight Sprint)
-  {
-    id: 'dn-2230',
-    day: 'night',
-    dayBadge: 'NIGHT OPS',
-    time: '10:30 PM',
-    isoTime: '22:30',
-    category: 'BLENDER 3D MODELING',
-    title: 'Photogrammetric Massifs & Draco GLB Compression',
-    summary:
-      'Team CBI overnight modeling session. Sculpted 4 hyper-realistic alpine massifs (Knife Edge Ridge, Cirque Amphitheater, Stepped Plateau, Multi-Ridge Network) with Draco 3D geometry compression for instant loading.',
-    deliverables: ['4 Custom Blender GLBs', 'Draco Mesh Compression', 'Interactive 3D Inspector'],
-    status: 'verified',
-    order: 5,
-  },
-  {
-    id: 'dn-0115',
-    day: 'night',
-    dayBadge: 'NIGHT OPS',
-    time: '01:15 AM',
-    isoTime: '01:15',
-    category: 'TACTILE AUDIO SYNTHESIS',
-    title: 'Web Audio API Spatial Sound Engine',
-    summary:
-      'Synthesized military-grade tactical audio feedback directly in the browser via Web Audio API: 54Hz sub-bass radio hums, transmitter beacon chirps, relay clicks, and packet receipt alarms.',
-    deliverables: ['Web Audio Synthesizer', 'Sub-Bass Ambient Drone', 'Tactile Interaction Clicks'],
-    status: 'completed',
-    order: 6,
-  },
-  {
-    id: 'dn-0345',
-    day: 'night',
-    dayBadge: 'NIGHT OPS',
-    time: '03:45 AM',
-    isoTime: '03:45',
-    category: 'RADIO PROPAGATION PHYSICS',
-    title: '40-Step DEM Raycasting & Fresnel Clearance Math',
-    summary:
-      'Engineered procedural alpine DEM elevation model and 40-step ray clearance algorithm. Calculated knife-edge diffraction and 60% Fresnel zone clearance margins across mountain ridges.',
-    deliverables: ['Procedural Alpine DEM', '40-Step LOS Raycaster', 'Knife-Edge Fresnel Math'],
-    status: 'verified',
-    order: 7,
-  },
-  {
-    id: 'dn-0530',
-    day: 'night',
-    dayBadge: 'NIGHT OPS',
-    time: '05:30 AM',
-    isoTime: '05:30',
-    category: '21ST.DEV DESIGN OVERHAUL',
-    title: 'Minimalist iOS-Grade Spatial HUD Architecture',
-    summary:
-      'Executed a pre-dawn design overhaul powered by 21st.dev components. Replaced cluttered tables with minimalist glass HUD cards, dark atmospheric gradients, and streamlined touch navigation.',
-    deliverables: ['21st.dev Glass Components', 'Atmospheric Gradients', 'Minimalist Spatial HUD'],
-    status: 'completed',
-    order: 8,
-  },
-
-  // DAY 2 (Oct 26 - Gemini AI & Final Submission)
-  {
-    id: 'd2-0830',
-    day: 2,
-    dayBadge: 'DAY 2',
-    time: '08:30 AM',
-    isoTime: '08:30',
-    category: 'DAY 2 STANDUP',
-    title: 'Day 2 Standup & Multi-Paradigmatic Lab Review',
-    summary:
-      'Team CBI reconvened at 08:30 AM. Benchmarked operator cognitive load across Cinematic Tactical, Cartographic Scientific, and Minimalist Editorial design paradigms.',
-    deliverables: ['Team CBI Standup', 'Cognitive Load Benchmarks', 'Final Sprint Roadmap'],
-    status: 'completed',
-    order: 9,
-  },
+  // DAY 2 (26 October)
   {
     id: 'd2-1100',
     day: 2,
-    dayBadge: 'DAY 2',
+    dayBadge: 'DAY 2 · 26 OCT',
     time: '11:00 AM',
     isoTime: '11:00',
+    category: 'DAY 2 KICKOFF & BLENDER 3D',
+    title: 'Day 2 Sprint Resumption & Blender 3D Terrains',
+    summary:
+      'Team CBI resumed engineering at 11:00 AM on 26 October. Integrated 4 hyper-detailed Blender GLB terrains with Draco geometry compression (Knife Edge Ridge, Cirque Amphitheater, Stepped Plateau, Multi-Ridge Network).',
+    deliverables: ['4 Blender GLB Models', 'Draco 3D Compression', 'WebGL Orbit Camera'],
+    status: 'completed',
+    order: 5,
+  },
+  {
+    id: 'd2-1230',
+    day: 2,
+    dayBadge: 'DAY 2 · 26 OCT',
+    time: '12:30 PM',
+    isoTime: '12:30',
     category: 'GEMINI 2.5 FLASH AI',
     title: 'Live Google Gemini 2.5 Flash Neural Integration',
     summary:
-      'Connected live Google Gemini 2.5 Flash inference API. Engineered prompt architecture with JSON structured outputs, low temperature deterministic reasoning, and dynamic key failover.',
-    deliverables: ['Gemini 2.5 Flash Core', 'Structured JSON Outputs', 'Dynamic API Key Engine'],
+      'Connected live Google Gemini 2.5 Flash inference API. Engineered prompt architecture with JSON structured outputs, multi-tier directives (general knowledge, tactical RF physics), and strict non-lethal SAR guardrails.',
+    deliverables: ['Gemini 2.5 Flash Core', 'Structured JSON Outputs', 'SAR Ethical Guardrails'],
     status: 'verified',
-    order: 10,
+    order: 6,
   },
   {
-    id: 'd2-0115',
+    id: 'd2-1400',
     day: 2,
-    dayBadge: 'DAY 2',
-    time: '01:15 PM',
-    isoTime: '13:15',
-    category: 'ETHICAL GUARDRAILS',
-    title: 'Multi-Tier Reasoning & Non-Lethal Guardrails',
+    dayBadge: 'DAY 2 · 26 OCT',
+    time: '02:00 PM',
+    isoTime: '14:00',
+    category: 'VERIFICATION PIPELINE & AUDIO',
+    title: '4-Stage Animated Telemetry Pipeline & Web Audio Engine',
     summary:
-      'Equipped the AI to understand general knowledge and military radio physics with depth, while strictly enforcing peaceful search-and-rescue guardrails against kinetic weapons and lethal targeting.',
-    deliverables: ['Multi-Tier Reasoning', 'Lethal Targeting Guardrails', 'Unclassified RF Physics'],
+      'Built the animated 4-stage verification tracker, full-depth SITREP Reader card, and synthesized tactile Web Audio API feedback (54Hz sub-bass radio drone, beacon chirps, and mechanical click feedback).',
+    deliverables: ['4-Stage Verification Pipeline', 'Full SITREP Reader Card', 'Web Audio API Synthesizer'],
     status: 'completed',
-    order: 11,
+    order: 7,
   },
   {
-    id: 'd2-0245',
+    id: 'd2-1530',
     day: 2,
-    dayBadge: 'DAY 2',
-    time: '02:45 PM',
-    isoTime: '14:45',
-    category: 'VERIFICATION PIPELINE',
-    title: '4-Stage Animated Verification & SITREP Reader',
-    summary:
-      'Designed an animated 4-stage pipeline (Telemetry Ingestion → DEM Raycast → Operational Guardrail → Neural Synthesis) and an unclamped, full-depth SITREP Reader with preset inquiry chips.',
-    deliverables: ['4-Stage Verification Bar', 'Full SITREP Reader Card', 'Interactive Query Presets'],
-    status: 'completed',
-    order: 12,
-  },
-  {
-    id: 'd2-0330',
-    day: 2,
-    dayBadge: 'DAY 2',
+    dayBadge: 'DAY 2 · 26 OCT',
     time: '03:30 PM',
     isoTime: '15:30',
-    category: 'OPTIMIZATION & AUDIT',
-    title: '60 FPS WebGL Optimization & Secret Scrubbing',
+    category: 'PERFORMANCE & CODE FREEZE',
+    title: '60 FPS WebGL Throttling & Secret Scrubbing',
     summary:
-      'Integrated IntersectionObserver pausing for Three.js render loops to eliminate UI lag. Scrubbed exposed secrets from commit history and validated zero TypeScript errors across 26 pages.',
+      'Integrated IntersectionObserver pausing for Three.js render loops to eliminate UI lag. Scrubbed exposed secrets from commit history, passing GitHub Push Protection with 100% build pass rate across 26 pages.',
     deliverables: ['60 FPS WebGL Throttling', 'Git Push Protection Pass', 'Clean TypeScript Build'],
     status: 'verified',
-    order: 13,
+    order: 8,
   },
   {
     id: 'd2-1600',
@@ -217,11 +146,26 @@ export const HACKATHON_SPRINT_DATA: HackathonMilestone[] = [
     category: 'FINAL SUBMISSION',
     title: 'Official Final Submission & Production Release by Team CBI',
     summary:
-      'Final submission cut at 04:00 PM sharp on Day 2 by Team CBI! Deployed to production with 100% build pass rate, live Gemini 2.5 Flash neural intelligence, offline store-and-forward mesh, and interactive 3D terrain viewer.',
+      'Final submission cut at 04:00 PM sharp on 26 October by Team CBI! Deployed to production on Vercel (https://cairn-cbi.vercel.app/) with 100% build pass rate, live Gemini 2.5 Flash neural intelligence, and interactive 3D terrain viewer.',
     deliverables: ['Production Vercel Release', 'Team CBI Final Cut', 'Live Gemini 2.5 Flash', 'Zero Build Errors'],
     status: 'submitted',
     highlight: true,
-    order: 14,
+    order: 9,
+  },
+  {
+    id: 'd2-1700',
+    day: 2,
+    dayBadge: 'DAY 2 · 17:00',
+    time: '05:00 PM',
+    isoTime: '17:00',
+    category: 'PITCHING & DEMO ROUND',
+    title: 'Official Pitching & Live Demonstration Round',
+    summary:
+      'Team CBI delivers the live operational pitch to the evaluation panel at 05:00 PM. Demonstrates live delay-tolerant mesh severance, automatic store-and-forward queue healing, 3D Blender terrain inspection, and Gemini 2.5 Flash reasoning.',
+    deliverables: ['Live Tactical Demonstration', 'Judge & Evaluator Q&A', 'Mission Architecture Handover'],
+    status: 'upcoming',
+    isPitch: true,
+    order: 10,
   },
 ];
 
@@ -229,25 +173,26 @@ export interface TimelineProps {
   title?: string;
   subtitle?: string;
   showDayFilters?: boolean;
-  initialDayFilter?: 'all' | 1 | 'night' | 2;
+  initialDayFilter?: 'all' | 1 | 2 | 'final';
   className?: string;
 }
 
 export default function Timeline({
   title = 'Engineering Sprint Log',
-  subtitle = 'Chronological engineering timeline tracking architecture, overnight Blender modeling, audio synthesis, and final submission at 04:00 PM.',
+  subtitle = 'Chronological engineering timeline from 25 Oct 12:00 PM intake to 26 Oct 04:00 PM submission and 05:00 PM pitching round.',
   showDayFilters = true,
   initialDayFilter = 'all',
   className,
 }: TimelineProps) {
-  const [dayFilter, setDayFilter] = useState<'all' | 1 | 'night' | 2>(initialDayFilter);
+  const [dayFilter, setDayFilter] = useState<'all' | 1 | 2 | 'final'>(initialDayFilter);
 
   const filteredMilestones = useMemo(() => {
     if (dayFilter === 'all') return HACKATHON_SPRINT_DATA;
-    return HACKATHON_SPRINT_DATA.filter((m) => m.day === dayFilter);
+    if (dayFilter === 'final') return HACKATHON_SPRINT_DATA.filter((m) => m.highlight || m.isPitch);
+    return HACKATHON_SPRINT_DATA.filter((m) => m.day === dayFilter && !m.isPitch && !m.highlight);
   }, [dayFilter]);
 
-  const handleFilterChange = useCallback((filter: 'all' | 1 | 'night' | 2) => {
+  const handleFilterChange = useCallback((filter: 'all' | 1 | 2 | 'final') => {
     sound.playClick();
     setDayFilter(filter);
   }, []);
@@ -259,7 +204,7 @@ export default function Timeline({
         <div>
           <div className="text-xs font-mono uppercase tracking-widest text-signal mb-2 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
-            <span className="font-bold">Team CBI · Sprint Chronicle</span>
+            <span className="font-bold">Team CBI · Sprint Chronicle (25–26 Oct)</span>
           </div>
           <h2 className="font-display font-extrabold text-3xl sm:text-5xl uppercase tracking-tight text-ink">
             {title}
@@ -267,7 +212,7 @@ export default function Timeline({
           {subtitle && <p className="text-xs sm:text-sm text-mute font-sans mt-2 max-w-xl">{subtitle}</p>}
         </div>
 
-        {/* Day & Night Filters */}
+        {/* Day & Final Filters */}
         {showDayFilters && (
           <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-full bg-surface/60 border border-white/[0.08] text-xs font-mono shrink-0">
             <button
@@ -278,7 +223,7 @@ export default function Timeline({
               )}
             >
               <Layers className="w-3 h-3" />
-              <span>All (14)</span>
+              <span>All (10)</span>
             </button>
             <button
               onClick={() => handleFilterChange(1)}
@@ -288,17 +233,7 @@ export default function Timeline({
               )}
             >
               <Sun className="w-3 h-3" />
-              <span>Day 1 (4)</span>
-            </button>
-            <button
-              onClick={() => handleFilterChange('night')}
-              className={cn(
-                'px-3 py-1 rounded-full transition-all flex items-center gap-1.5',
-                dayFilter === 'night' ? 'bg-cyan-400 text-deep-ground font-bold shadow-sm' : 'text-mute hover:text-ink'
-              )}
-            >
-              <Moon className="w-3 h-3 text-cyan-300" />
-              <span>Night Ops (4)</span>
+              <span>25 Oct (4)</span>
             </button>
             <button
               onClick={() => handleFilterChange(2)}
@@ -307,8 +242,18 @@ export default function Timeline({
                 dayFilter === 2 ? 'bg-amber-400 text-deep-ground font-bold shadow-sm' : 'text-mute hover:text-ink'
               )}
             >
-              <Trophy className="w-3 h-3 text-amber-950" />
-              <span>Day 2 & Final (6)</span>
+              <Clock className="w-3 h-3 text-amber-950" />
+              <span>26 Oct (4)</span>
+            </button>
+            <button
+              onClick={() => handleFilterChange('final')}
+              className={cn(
+                'px-3 py-1 rounded-full transition-all flex items-center gap-1.5',
+                dayFilter === 'final' ? 'bg-cyan-400 text-deep-ground font-bold shadow-sm' : 'text-mute hover:text-ink'
+              )}
+            >
+              <Trophy className="w-3 h-3 text-cyan-950" />
+              <span>16:00 & 17:00 (2)</span>
             </button>
           </div>
         )}
@@ -318,8 +263,8 @@ export default function Timeline({
       <div className="relative pt-10 pl-4 sm:pl-8 space-y-12 before:absolute before:left-0 sm:before:left-2 before:top-12 before:bottom-6 before:w-px before:bg-white/[0.1]">
         {filteredMilestones.map((item) => {
           const isDay1 = item.day === 1;
-          const isNight = item.day === 'night';
           const isHighlight = item.highlight;
+          const isPitch = item.isPitch;
 
           return (
             <div
@@ -327,7 +272,9 @@ export default function Timeline({
               className={cn(
                 'relative group transition-all duration-300 rounded-2xl p-5',
                 isHighlight
-                  ? 'bg-gradient-to-r from-signal/10 via-amber-500/10 to-surface/40 border-2 border-signal/50 shadow-lg shadow-signal/10'
+                  ? 'bg-gradient-to-r from-signal/15 via-amber-500/10 to-surface/50 border-2 border-signal/60 shadow-lg shadow-signal/10'
+                  : isPitch
+                  ? 'bg-gradient-to-r from-cyan-500/15 via-blue-500/10 to-surface/50 border-2 border-cyan-400/60 shadow-lg shadow-cyan-500/10'
                   : 'hover:bg-white/[0.02] border border-transparent hover:border-white/[0.06]'
               )}
             >
@@ -337,8 +284,8 @@ export default function Timeline({
                   'absolute -left-4 sm:-left-8 top-6 w-3 h-3 rounded-full -translate-x-1/2 ring-4 ring-deep-ground transition-all',
                   isHighlight
                     ? 'bg-signal ring-signal/30 animate-pulse w-4 h-4'
-                    : isNight
-                    ? 'bg-cyan-400 ring-cyan-500/20'
+                    : isPitch
+                    ? 'bg-cyan-400 ring-cyan-500/30 animate-pulse w-4 h-4'
                     : isDay1
                     ? 'bg-signal ring-signal/20'
                     : 'bg-amber-400 ring-amber-500/20'
@@ -350,18 +297,18 @@ export default function Timeline({
                 <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
                   <span
                     className={cn(
-                      'font-bold px-2 py-0.5 rounded-full text-[11px] flex items-center gap-1.5',
+                      'font-bold px-2.5 py-0.5 rounded-full text-[11px] flex items-center gap-1.5',
                       isHighlight
                         ? 'bg-signal text-deep-ground font-extrabold shadow-sm'
-                        : isNight
-                        ? 'bg-cyan-950/80 text-cyan-300 border border-cyan-500/30'
+                        : isPitch
+                        ? 'bg-cyan-400 text-deep-ground font-extrabold shadow-sm'
                         : isDay1
                         ? 'bg-signal/15 text-signal border border-signal/30'
                         : 'bg-amber-950/80 text-amber-300 border border-amber-500/30'
                     )}
                   >
-                    {isNight && <Moon className="w-3 h-3 text-cyan-300" />}
                     {isHighlight && <Trophy className="w-3 h-3 text-deep-ground" />}
+                    {isPitch && <Presentation className="w-3 h-3 text-deep-ground" />}
                     <span>{item.dayBadge} · {item.time}</span>
                   </span>
 
@@ -373,6 +320,11 @@ export default function Timeline({
                       <span className="px-2 py-0.5 rounded bg-signal/20 text-signal font-bold uppercase tracking-wider border border-signal/40 flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
                         SUBMITTED BY TEAM CBI
+                      </span>
+                    ) : isPitch ? (
+                      <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold uppercase tracking-wider border border-cyan-400/40 flex items-center gap-1">
+                        <Presentation className="w-3 h-3" />
+                        PITCHING ROUND · 05:00 PM
                       </span>
                     ) : (
                       <>
@@ -389,6 +341,8 @@ export default function Timeline({
                     'font-sans font-bold transition-colors',
                     isHighlight
                       ? 'text-xl sm:text-2xl text-signal flex items-center gap-2'
+                      : isPitch
+                      ? 'text-xl sm:text-2xl text-cyan-300 flex items-center gap-2'
                       : 'text-lg text-ink group-hover:text-signal'
                   )}
                 >
@@ -409,6 +363,8 @@ export default function Timeline({
                         'px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors',
                         isHighlight
                           ? 'bg-signal/20 border border-signal/40 text-signal font-bold'
+                          : isPitch
+                          ? 'bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-bold'
                           : 'bg-surface/60 border border-white/[0.08] text-ink/80 hover:text-ink hover:border-white/20'
                       )}
                     >
