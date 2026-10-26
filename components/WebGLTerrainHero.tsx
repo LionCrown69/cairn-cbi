@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import SVGRidgeHeroFallback from './SVGRidgeHeroFallback';
 import MapboxTerrainView from './MapboxTerrainView';
 import { getTerrainElevation } from '@/lib/terrainModel';
-import { Radio, ChevronRight, Activity, Eye, Layers, Globe, Mountain, Play, Pause } from 'lucide-react';
+import { Radio, ChevronRight, Activity, Eye, Layers, Globe, Mountain, Play, Pause, Sparkles, ArrowRight, GitFork } from 'lucide-react';
 
 interface Props {
   onExploreConsole?: () => void;
@@ -297,67 +297,59 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
   const curScene = scenes[activeScene];
 
   return (
-    <div className="relative w-full h-[94vh] min-h-[720px] overflow-hidden bg-deep-ground flex flex-col justify-between border-b border-line select-none">
-      {/* Visual Engine Mode Switcher Bar */}
-      <div className="relative z-20 p-4 sm:p-6 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 pointer-events-auto bg-deep-ground/90 backdrop-blur-md p-1 rounded-lg border border-line text-xs font-mono">
-          <button
-            onClick={() => setHeroMode('3d-mesh')}
-            className={`px-3 py-1 rounded flex items-center gap-1.5 transition-all ${
-              heroMode === '3d-mesh'
-                ? 'bg-signal text-deep-ground font-bold shadow-sm'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            <Mountain className="w-3.5 h-3.5" />
-            <span>Sculpted 3D Massif</span>
-          </button>
-
-          <button
-            onClick={() => setHeroMode('mapbox-3d')}
-            className={`px-3 py-1 rounded flex items-center gap-1.5 transition-all ${
-              heroMode === 'mapbox-3d'
-                ? 'bg-signal text-deep-ground font-bold shadow-sm'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            <Globe className="w-3.5 h-3.5" />
-            <span>Mapbox 3D Style</span>
-          </button>
-
-          <button
-            onClick={() => setHeroMode('svg-plate01')}
-            className={`px-3 py-1 rounded flex items-center gap-1.5 transition-all ${
-              heroMode === 'svg-plate01'
-                ? 'bg-signal text-deep-ground font-bold shadow-sm'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Plate 01 Ridges</span>
-          </button>
+    <div className="relative w-full h-[90vh] min-h-[660px] max-h-[920px] overflow-hidden bg-deep-ground flex flex-col justify-between border-b border-white/[0.08] select-none">
+      {/* Discreet Engine Mode Controls */}
+      <div className="relative z-20 px-6 py-4 flex items-center justify-between pointer-events-none">
+        <div className="flex items-center gap-2 pointer-events-auto text-xs font-mono">
+          <span className="w-2 h-2 rounded-full bg-signal animate-pulse" />
+          <span className="text-mute text-[11px] tracking-wider uppercase font-medium">Valais Alpine Sector · 3,200m</span>
         </div>
 
-        {heroMode === '3d-mesh' && (
-          <div className="hidden md:flex items-center gap-3 font-mono text-xs text-mute bg-deep-ground/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-line pointer-events-auto">
+        <div className="flex items-center gap-2 pointer-events-auto bg-surface/70 backdrop-blur-md p-1 rounded-full border border-white/[0.08] text-xs font-mono">
+          <button
+            onClick={() => setHeroMode('3d-mesh')}
+            className={`px-3 py-1 rounded-full transition-all ${
+              heroMode === '3d-mesh'
+                ? 'bg-signal text-deep-ground font-bold'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            3D Massif
+          </button>
+          <button
+            onClick={() => setHeroMode('mapbox-3d')}
+            className={`px-3 py-1 rounded-full transition-all ${
+              heroMode === 'mapbox-3d'
+                ? 'bg-signal text-deep-ground font-bold'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            Mapbox 3D
+          </button>
+          <button
+            onClick={() => setHeroMode('svg-plate01')}
+            className={`px-3 py-1 rounded-full transition-all ${
+              heroMode === 'svg-plate01'
+                ? 'bg-signal text-deep-ground font-bold'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            Contours
+          </button>
+
+          {heroMode === '3d-mesh' && (
             <button
               onClick={() => setIsRotating(!isRotating)}
-              className="text-signal flex items-center gap-1 hover:text-ink transition-colors"
-              title="Toggle continuous terrain rotation"
+              className="px-2 py-1 text-mute hover:text-ink transition-colors border-l border-white/10 ml-1"
+              title="Toggle rotation"
             >
               {isRotating ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-              <span>{isRotating ? 'Rotating' : 'Paused'}</span>
             </button>
-            <span className="text-line">|</span>
-            <span className="flex items-center gap-1 text-ink">
-              <Activity className="w-3.5 h-3.5 text-signal" />
-              {fps} FPS
-            </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Main Visual Canvas Container */}
+      {/* Main Visual 3D Canvas */}
       <div className="absolute inset-0 z-0">
         {heroMode === '3d-mesh' && (
           webglSupported ? (
@@ -370,77 +362,179 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
         {heroMode === 'svg-plate01' && <SVGRidgeHeroFallback />}
       </div>
 
-      {/* Hero Narrative Overlay & Scene Stepper */}
-      <div className="relative z-10 px-6 sm:px-12 pb-8 sm:pb-12 max-w-4xl mt-auto pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-surface/90 border border-signal/40 text-signal font-mono text-xs tracking-wider uppercase mb-3 pointer-events-auto">
-          <Radio className="w-3.5 h-3.5 animate-pulse" />
-          <span>{curScene.badge}</span>
+      {/* Subtle Bottom Scrim for effortless readability without boxy cards */}
+      <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-deep-ground via-deep-ground/60 to-transparent pointer-events-none z-0" />
+
+      {/* FLOATING TACTICAL PINS ON 3D TERRAIN (Matching Reference Image) */}
+      <div className="absolute inset-0 pointer-events-none z-10 hidden md:block">
+        {/* Node A1 (Online - Peak) */}
+        <div className="absolute right-[24%] top-[24%] flex items-center gap-3 animate-fadeIn">
+          <div className="relative flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-signal/20 animate-ping absolute" />
+            <div className="w-4 h-4 rounded-full bg-signal shadow-glow-signal flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-deep-ground" />
+            </div>
+          </div>
+          <div className="p-2 rounded-xl bg-surface/85 border border-signal/40 backdrop-blur-md font-mono text-[11px] shadow-xl">
+            <div className="flex items-center gap-1.5 text-signal font-bold">
+              <span>NODE A1</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-signal" />
+            </div>
+            <span className="text-[10px] text-mute uppercase block">ONLINE · ELEV 3,420 m</span>
+          </div>
         </div>
 
-        <h1 className="font-display font-extrabold uppercase text-5xl sm:text-7xl lg:text-8xl tracking-tight leading-tight-display text-ink drop-shadow-2xl">
-          {curScene.headline.split('. ')[0]}.
-          <br />
-          <span className="text-signal">{curScene.headline.split('. ')[1] || 'STILL CONNECTED.'}</span>
-        </h1>
+        {/* Node B2 (Queued - Saddle) */}
+        <div className="absolute right-[52%] top-[40%] flex items-center gap-2.5 animate-fadeIn">
+          <div className="w-3.5 h-3.5 rounded-full bg-caution shadow-glow-caution flex items-center justify-center">
+            <div className="w-1 rounded-full bg-deep-ground" />
+          </div>
+          <div className="p-2 rounded-xl bg-surface/85 border border-caution/40 backdrop-blur-md font-mono text-[11px] shadow-xl">
+            <div className="flex items-center gap-1.5 text-caution font-bold">
+              <span>NODE B2</span>
+              <span className="text-[9px] uppercase px-1 rounded bg-caution/20">QUEUED</span>
+            </div>
+            <span className="text-[10px] text-mute uppercase block">ELEV 2,980 m</span>
+          </div>
+        </div>
 
-        <p className="mt-4 text-sm sm:text-base text-mute font-mono max-w-xl leading-relaxed bg-deep-ground/85 backdrop-blur-md p-3.5 rounded border border-line/70 pointer-events-auto">
-          {curScene.subtext}
-        </p>
+        {/* Node C3 (Blocked - Cirque Shadow) */}
+        <div className="absolute right-[14%] top-[45%] flex items-center gap-2.5 animate-fadeIn">
+          <div className="w-3.5 h-3.5 rounded-full bg-severed flex items-center justify-center">
+            <div className="w-1 rounded-full bg-deep-ground" />
+          </div>
+          <div className="p-2 rounded-xl bg-surface/85 border border-severed/40 backdrop-blur-md font-mono text-[11px] shadow-xl">
+            <div className="flex items-center gap-1.5 text-severed font-bold">
+              <span>NODE C3</span>
+              <span className="text-[9px] uppercase px-1 rounded bg-severed/20">BLOCKED</span>
+            </div>
+            <span className="text-[10px] text-mute uppercase block">ELEV 3,112 m · RF SHADOW</span>
+          </div>
+        </div>
 
-        {/* Scene Navigation Stepper */}
-        <div className="mt-6 flex flex-wrap items-center gap-2 pointer-events-auto">
-          {scenes.map((s, i) => (
-            <button
-              key={s.id}
-              onClick={() => setActiveScene(i)}
-              className={`px-3 py-1.5 rounded font-mono text-xs transition-all flex items-center gap-1.5 border ${
-                activeScene === i
-                  ? 'bg-signal text-deep-ground font-bold border-signal shadow-glow-signal'
-                  : 'bg-surface/85 text-mute border-line hover:text-ink hover:border-signal/50'
-              }`}
-            >
-              <span>{s.title}</span>
-            </button>
-          ))}
+        {/* Top Right Tactical Altitude & Compass HUD */}
+        <div className="absolute right-8 top-16 text-right font-mono text-xs space-y-1">
+          {/* Compass Rose */}
+          <div className="w-12 h-12 rounded-full border border-white/20 ml-auto flex items-center justify-center relative mb-2">
+            <span className="text-[9px] text-signal font-bold absolute top-0.5">N</span>
+            <div className="w-2 h-2 rounded-full bg-signal/60" />
+            <div className="w-px h-6 bg-signal/40 rotate-45 absolute" />
+          </div>
 
-          {onExploreConsole ? (
-            <button
-              onClick={onExploreConsole}
-              className="ml-auto px-4 py-1.5 rounded font-mono text-xs font-bold uppercase tracking-wider bg-surface border border-signal text-signal hover:bg-signal hover:text-deep-ground transition-all flex items-center gap-1.5"
-            >
-              <span>Launch Field Console</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          ) : (
-            <a
-              href="/console"
-              className="ml-auto px-4 py-1.5 rounded font-mono text-xs font-bold uppercase tracking-wider bg-surface border border-signal text-signal hover:bg-signal hover:text-deep-ground transition-all flex items-center gap-1.5"
-            >
-              <span>Launch Field Console</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </a>
-          )}
+          <div className="text-xl font-black text-ink">3,420 m</div>
+          <div className="text-[10px] uppercase text-mute tracking-widest">ALTITUDE</div>
+          <div className="text-[11px] text-signal font-semibold pt-1">32.4871° N, 76.3095° E</div>
+
+          {/* Right Rail Indexes */}
+          <div className="pt-4 space-y-1 text-[11px] text-mute">
+            <div className="flex items-center justify-end gap-2 text-ink">
+              <span>TERRAIN</span> <span className="text-signal font-bold">01</span>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <span>LINKS</span> <span>02</span>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <span>MESSAGES</span> <span>03</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Exploded Layers Quick Legend */}
-      <div className="absolute right-6 bottom-24 hidden xl:block z-10 pointer-events-auto">
-        <div className="cairn-glass p-3.5 rounded-lg border border-line text-xs font-mono w-64 space-y-2">
-          <div className="flex items-center gap-2 text-ink font-bold border-b border-line pb-1.5">
-            <Eye className="w-3.5 h-3.5 text-signal" />
-            <span>ACTIVE 3D PROJECTION</span>
+      {/* Hero Narrative Overlay & Scene Controls */}
+      <div className="relative z-10 px-6 sm:px-12 pb-12 sm:pb-16 max-w-4xl mt-auto pointer-events-none">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface/60 border border-white/[0.08] text-signal font-mono text-[11px] tracking-wider uppercase mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-signal" />
+          <span>Mountain Safety · Offline Mesh Network</span>
+        </div>
+
+        <h1 className="font-sans font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-ink leading-[1.08]">
+          No signal.
+          <br />
+          <span className="text-signal font-light">Still connected.</span>
+        </h1>
+
+        <p className="mt-4 text-sm sm:text-base text-mute font-sans font-normal max-w-xl leading-relaxed">
+          When granite ridges block cellular and satellite links, Cairn automatically holds and hops your team’s messages across peak relays — guaranteeing zero lost dispatches.
+        </p>
+
+        {/* Clean Action Buttons */}
+        <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
+          <a
+            href="/console"
+            className="px-6 py-3.5 rounded-full font-sans text-xs font-semibold uppercase tracking-wider bg-signal text-deep-ground hover:bg-signal/90 transition-all flex items-center gap-2 shadow-glow-signal group"
+          >
+            <span>Explore The Console</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </a>
+
+          {/* Watch Simulation Pill Button */}
+          <button
+            onClick={() => {
+              const el = document.getElementById('mesh-lab');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-5 py-3.5 rounded-full font-sans text-xs font-medium uppercase tracking-wider bg-surface/60 border border-white/[0.1] text-ink hover:text-signal hover:border-signal/40 transition-all flex items-center gap-2.5 backdrop-blur-md"
+          >
+            <div className="w-5 h-5 rounded-full bg-signal/20 text-signal flex items-center justify-center">
+              <Play className="w-2.5 h-2.5 fill-current" />
+            </div>
+            <span>Watch Simulation · 02:18</span>
+          </button>
+
+          {/* Scene Dots */}
+          <div className="flex items-center gap-1.5 bg-surface/60 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/[0.08] sm:ml-auto">
+            {scenes.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setActiveScene(i)}
+                className={`px-2.5 py-0.5 rounded-full font-mono text-xs transition-all ${
+                  activeScene === i
+                    ? 'bg-signal text-deep-ground font-bold shadow-sm'
+                    : 'text-mute hover:text-ink'
+                }`}
+              >
+                0{i + 1}
+              </button>
+            ))}
           </div>
-          <div className="flex items-center justify-between text-caution">
-            <span>L3 · MESSAGES</span>
-            <span className="text-[10px] uppercase">Observed (Sim)</span>
+        </div>
+
+        {/* 3 Core Value Pillars in Clean, Human Language */}
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08] pointer-events-auto">
+          <div className="flex items-start gap-2.5">
+            <Radio className="w-4 h-4 text-signal shrink-0 mt-0.5" />
+            <div>
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
+                Offline-First
+              </span>
+              <span className="text-xs text-mute font-sans font-light leading-snug">
+                Messages stay safe in device memory until a relay is in reach.
+              </span>
+            </div>
           </div>
-          <div className="flex items-center justify-between text-signal">
-            <span>L2 · LINKS</span>
-            <span className="text-[10px] uppercase">Estimated LOS</span>
+
+          <div className="flex items-start gap-2.5">
+            <Mountain className="w-4 h-4 text-signal shrink-0 mt-0.5" />
+            <div>
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
+                Terrain Awareness
+              </span>
+              <span className="text-xs text-mute font-sans font-light leading-snug">
+                Simulates 3,000m ridge shadows to reveal occluded valleys.
+              </span>
+            </div>
           </div>
-          <div className="flex items-center justify-between text-mute">
-            <span>L1 · TERRAIN</span>
-            <span className="text-[10px] uppercase">3D Solid Massif</span>
+
+          <div className="flex items-start gap-2.5">
+            <GitFork className="w-4 h-4 text-signal shrink-0 mt-0.5" />
+            <div>
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
+                Intelligent Routing
+              </span>
+              <span className="text-xs text-mute font-sans font-light leading-snug">
+                Autonomous multi-hop mesh hops over granite peaks to base camp.
+              </span>
+            </div>
           </div>
         </div>
       </div>

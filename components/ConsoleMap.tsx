@@ -21,10 +21,14 @@ export default function ConsoleMap() {
     resetMesh,
   } = useMeshStore();
 
+  const [mapPreset, setMapPreset] = React.useState<'topographic' | '3d' | 'heatmap' | 'links' | 'weather'>('topographic');
+  const [showRiskArea, setShowRiskArea] = React.useState(true);
+  const [zoomLevel, setZoomLevel] = React.useState(1);
+
   const selectedRoute = getSelectedRoute();
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
-  // Map coordinate conversion: grid range (-6 to +8 km) -> SVG (800 x 600 px)
+  // Map coordinate conversion: grid range (-6 to +8 km) -> SVG (800 x 560 px)
   const mapWidth = 800;
   const mapHeight = 560;
 
@@ -33,7 +37,6 @@ export default function ConsoleMap() {
   }
 
   function toSvgY(kmY: number): number {
-    // Invert Y so positive is North
     return ((-kmY + 6) / 13) * (mapHeight - 120) + 60;
   }
 
@@ -46,61 +49,97 @@ export default function ConsoleMap() {
   ];
 
   return (
-    <div className="relative w-full h-[580px] bg-deep-ground rounded-lg border border-line overflow-hidden flex flex-col justify-between">
+    <div className="relative w-full h-[620px] bg-deep-ground rounded-2xl border border-white/[0.08] overflow-hidden flex flex-col justify-between">
       {/* Top Map Toolbar */}
-      <div className="relative z-20 p-3 sm:p-4 flex items-center justify-between border-b border-line bg-surface/75 backdrop-blur-md text-xs font-mono">
+      <div className="relative z-20 px-4 py-3 flex items-center justify-between border-b border-white/[0.08] bg-surface/80 backdrop-blur-md text-xs font-mono">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-signal animate-pulse" />
           <span className="text-ink font-bold tracking-wider uppercase">
-            SECTOR: VALAIS ALPS (SYNTHETIC GRID 14x13 KM)
+            Valais Alps Tactical Mesh
           </span>
-          <span className="hidden md:inline px-1.5 py-0.5 rounded bg-surface border border-line text-mute text-[10px]">
-            WGS84 / LOCAL CARTESIAN
+          <span className="hidden md:inline text-mute text-[11px]">
+            (14x13 km Cartographic · 10m DEM)
           </span>
         </div>
 
-        {/* View Mode Controls: 2D/3D & Exploded Layers */}
+        {/* View Mode Controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={toggle3dView}
-            className={`px-2.5 py-1 rounded border transition-all flex items-center gap-1.5 ${
-              is3dView
-                ? 'bg-signal text-deep-ground font-bold border-signal'
-                : 'bg-surface text-mute border-line hover:text-ink'
+            onClick={() => setShowRiskArea(!showRiskArea)}
+            className={`px-3 py-1 rounded-full border transition-all flex items-center gap-1.5 ${
+              showRiskArea
+                ? 'bg-severed/20 text-severed border-severed/40 font-bold'
+                : 'bg-surface/80 text-mute border-white/10 hover:text-ink'
             }`}
           >
-            <span>{is3dView ? '3D Oblique' : '2D Tactical'}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-severed" />
+            <span>Risk Shadow {showRiskArea ? 'ON' : 'OFF'}</span>
           </button>
 
           <button
-            onClick={toggleExplodedView}
-            className={`px-2.5 py-1 rounded border transition-all flex items-center gap-1.5 ${
-              activeExplodedView
-                ? 'bg-caution text-deep-ground font-bold border-caution'
-                : 'bg-surface text-mute border-line hover:text-ink'
+            onClick={toggle3dView}
+            className={`px-3 py-1 rounded-full border transition-all ${
+              is3dView || mapPreset === '3d'
+                ? 'bg-signal text-deep-ground font-bold border-signal'
+                : 'bg-surface/80 text-mute border-white/10 hover:text-ink'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Plate 03 Layers</span>
+            <span>{is3dView ? '3D Perspective' : '2D Map'}</span>
           </button>
 
           <button
             onClick={resetMesh}
-            title="Reset mesh to default"
-            className="p-1 rounded bg-surface border border-line text-mute hover:text-ink hover:border-signal/50"
+            title="Reset mesh"
+            className="p-1 rounded-full bg-surface/80 border border-white/10 text-mute hover:text-ink transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* SVG Vector Canvas with 3D Tilt CSS Transform if active */}
+      {/* Floating Left Tactical Toolbox */}
+      <div className="absolute left-4 top-16 z-30 flex flex-col gap-1.5 p-1 rounded-xl bg-surface/90 border border-white/[0.08] backdrop-blur-md shadow-xl text-ink font-mono text-xs">
+        <button
+          onClick={() => setZoomLevel(prev => Math.min(prev + 0.15, 1.5))}
+          title="Zoom in"
+          className="w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
+        >
+          +
+        </button>
+        <button
+          onClick={() => setZoomLevel(prev => Math.max(prev - 0.15, 0.85))}
+          title="Zoom out"
+          className="w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
+        >
+          -
+        </button>
+        <div className="w-full h-px bg-white/10 my-0.5" />
+        <button
+          onClick={() => setZoomLevel(1)}
+          title="Reset zoom"
+          className="w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-[10px] text-mute hover:text-ink transition-colors"
+        >
+          1x
+        </button>
+        <button
+          onClick={() => setShowRiskArea(prev => !prev)}
+          title="Toggle RF shadow hazard"
+          className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+            showRiskArea ? 'text-severed' : 'text-mute hover:text-ink'
+          }`}
+        >
+          <AlertTriangle className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* SVG Canvas with dynamic perspective */}
       <div
         className={`relative w-full flex-1 overflow-hidden transition-transform duration-700 ease-out flex items-center justify-center ${
-          is3dView
-            ? '[transform:perspective(900px)_rotateX(36deg)_scale(0.92)] shadow-2xl'
+          is3dView || mapPreset === '3d'
+            ? '[transform:perspective(1200px)_rotateX(24deg)_scale(0.95)]'
             : ''
         }`}
+        style={{ transform: `scale(${zoomLevel})` }}
       >
         <svg
           viewBox={`0 0 ${mapWidth} ${mapHeight}`}
@@ -110,8 +149,27 @@ export default function ConsoleMap() {
           <defs>
             {/* Grid Pattern */}
             <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#252A1E" strokeWidth="1" />
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#252A1E" strokeWidth="0.8" />
             </pattern>
+
+            {/* Red Hazard Stripe Pattern */}
+            <pattern id="hazard-stripes" width="12" height="12" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="12" stroke="#EF4444" strokeWidth="2.5" opacity="0.35" />
+            </pattern>
+
+            {/* Red Occlusion Glow */}
+            <radialGradient id="occlusion-red-glow" cx="45%" cy="55%" r="65%">
+              <stop offset="0%" stopColor="#EF4444" stopOpacity="0.45" />
+              <stop offset="65%" stopColor="#B91C1C" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#450A0A" stopOpacity="0.08" />
+            </radialGradient>
+
+            {/* Coverage Heatmap Gradient */}
+            <radialGradient id="coverage-lime-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#D4F53C" stopOpacity="0.3" />
+              <stop offset="60%" stopColor="#D4F53C" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#D4F53C" stopOpacity="0" />
+            </radialGradient>
 
             <filter id="glow-packet" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
@@ -122,31 +180,94 @@ export default function ConsoleMap() {
             </filter>
           </defs>
 
-          {/* LAYER 1: TERRAIN CONTOURS (SIMULATED MODEL) */}
+          {/* LAYER: BACKGROUND BASE GRID & TOPOGRAPHY */}
+          <rect width={mapWidth} height={mapHeight} fill="#0E120A" />
+          <rect width={mapWidth} height={mapHeight} fill="url(#grid-pattern)" />
+
+          {/* LAYER: HEATMAP COVERAGE BUFFERS (When Heatmap Preset Active) */}
+          {(mapPreset === 'heatmap' || mapPreset === 'topographic') && (
+            <g id="layer-coverage-heatmap">
+              {nodes.filter(n => n.status === 'online').map(n => (
+                <circle
+                  key={`heat-${n.id}`}
+                  cx={toSvgX(n.x)}
+                  cy={toSvgY(n.y)}
+                  r="110"
+                  fill="url(#coverage-lime-glow)"
+                />
+              ))}
+            </g>
+          )}
+
+          {/* CRITICAL FEATURE: RED SIGNAL LOST / TERRAIN SHADOW HAZARD ZONE */}
+          {showRiskArea && (
+            <g id="layer-risk-shadow" className="animate-fadeIn">
+              {/* Occlusion Shaded Polygon behind North Ridge crest */}
+              <polygon
+                points="80,310 200,280 310,315 285,450 215,490 70,470"
+                fill="url(#occlusion-red-glow)"
+                stroke="#EF4444"
+                strokeWidth="1.8"
+                strokeDasharray="6 3"
+              />
+              {/* Diagonal hazard hatching overlay */}
+              <polygon
+                points="80,310 200,280 310,315 285,450 215,490 70,470"
+                fill="url(#hazard-stripes)"
+              />
+
+              {/* Tactical Warning Badge in Red Dead Zone */}
+              <g transform="translate(145, 345)">
+                <rect
+                  x="-75"
+                  y="-14"
+                  width="150"
+                  height="28"
+                  rx="6"
+                  fill="#1C0808"
+                  fillOpacity="0.95"
+                  stroke="#EF4444"
+                  strokeWidth="1.2"
+                />
+                <circle cx="-60" cy="0" r="3.5" fill="#EF4444" className="animate-ping" />
+                <circle cx="-60" cy="0" r="2.5" fill="#EF4444" />
+                <text
+                  x="2"
+                  y="-2"
+                  fill="#F87171"
+                  fontSize="8"
+                  fontWeight="bold"
+                  fontFamily="monospace"
+                  textAnchor="middle"
+                >
+                  SIGNAL LOST // RF SHADOW
+                </text>
+                <text
+                  x="2"
+                  y="8"
+                  fill="#EF4444"
+                  fontSize="7.5"
+                  fontFamily="monospace"
+                  textAnchor="middle"
+                >
+                  -925.7m RIDGE OCCLUSION
+                </text>
+              </g>
+            </g>
+          )}
+
+          {/* LAYER 1: TERRAIN CONTOURS */}
           {(activeLayer === 'all' || activeLayer === 'l1') && (
             <g id="layer-terrain" opacity={activeExplodedView && activeLayer !== 'l1' ? 0.35 : 0.85}>
-              <rect width={mapWidth} height={mapHeight} fill="url(#grid-pattern)" />
-
               {/* Topographic Elevation Contours */}
               {contourCenters.map((c, idx) => {
                 const cx = toSvgX(c.x);
                 const cy = toSvgY(c.y);
                 return (
-                  <g key={idx} className="stroke-line/60 fill-none" strokeWidth="1">
+                  <g key={idx} className="stroke-line/50 fill-none" strokeWidth="1">
                     <ellipse cx={cx} cy={cy} rx={c.r1} ry={c.r1 * 0.75} strokeDasharray="3 3" />
                     <ellipse cx={cx} cy={cy} rx={c.r2} ry={c.r2 * 0.72} />
-                    <ellipse cx={cx} cy={cy} rx={c.r3} ry={c.r3 * 0.68} strokeWidth="1.5" />
-                    <text
-                      x={cx}
-                      y={cy + c.r1 * 0.8}
-                      fill="#A4A99A"
-                      fontSize="9"
-                      fontFamily="monospace"
-                      textAnchor="middle"
-                      opacity="0.6"
-                    >
-                      {c.label}
-                    </text>
+                    <ellipse cx={cx} cy={cy} rx={c.r3} ry={c.r3 * 0.68} strokeWidth="1.5" stroke="#485338" />
                   </g>
                 );
               })}
@@ -158,7 +279,7 @@ export default function ConsoleMap() {
                 stroke="#55642D"
                 strokeWidth="2.5"
                 strokeDasharray="6 3"
-                opacity="0.7"
+                opacity="0.8"
               />
             </g>
           )}
@@ -183,6 +304,10 @@ export default function ConsoleMap() {
                   selectedRoute.path.includes(link.toId) &&
                   Math.abs(selectedRoute.path.indexOf(link.fromId) - selectedRoute.path.indexOf(link.toId)) === 1;
 
+                const isSelectedLink =
+                  (link.fromId === selectedNodeId && link.toId === comparisonNodeId) ||
+                  (link.toId === selectedNodeId && link.fromId === comparisonNodeId);
+
                 return (
                   <g key={link.id}>
                     {/* Link Base Stroke */}
@@ -206,36 +331,39 @@ export default function ConsoleMap() {
                       className={isPartOfActiveRoute ? 'animate-pulse' : ''}
                     />
 
-                    {/* Midpoint Distance Badge */}
-                    <g
-                      transform={`translate(${(x1 + x2) / 2}, ${(y1 + y2) / 2 - 8})`}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        selectNode(from.id);
-                        setComparisonNode(to.id);
-                      }}
-                    >
-                      <rect
-                        x="-24"
-                        y="-8"
-                        width="48"
-                        height="16"
-                        rx="3"
-                        fill="#0E120A"
-                        stroke={isOnline ? '#3A4030' : '#525946'}
-                        strokeWidth="1"
-                      />
-                      <text
-                        x="0"
-                        y="4"
-                        fill={isOnline ? '#F1F0EA' : '#A4A99A'}
-                        fontSize="9"
-                        fontFamily="monospace"
-                        textAnchor="middle"
+                    {/* Only show distance badge if part of active route or selected link */}
+                    {(isPartOfActiveRoute || isSelectedLink) && (
+                      <g
+                        transform={`translate(${(x1 + x2) / 2}, ${(y1 + y2) / 2})`}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          selectNode(from.id);
+                          setComparisonNode(to.id);
+                        }}
                       >
-                        {link.distanceKm}km
-                      </text>
-                    </g>
+                        <rect
+                          x="-18"
+                          y="-7"
+                          width="36"
+                          height="14"
+                          rx="4"
+                          fill="#0E120A"
+                          fillOpacity="0.8"
+                          stroke={isPartOfActiveRoute ? '#FF8A3D' : '#3A4030'}
+                          strokeWidth="0.8"
+                        />
+                        <text
+                          x="0"
+                          y="3"
+                          fill={isPartOfActiveRoute ? '#FF8A3D' : '#A4A99A'}
+                          fontSize="8"
+                          fontFamily="monospace"
+                          textAnchor="middle"
+                        >
+                          {link.distanceKm}k
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -260,7 +388,7 @@ export default function ConsoleMap() {
                     onClick={() => selectNode(node.id)}
                     tabIndex={0}
                     role="button"
-                    aria-label={`Node ${node.callsign}, status ${node.status}, elevation ${node.elevationM}m`}
+                    aria-label={`Node ${node.callsign}`}
                     onKeyDown={e => {
                       if (e.key === 'Enter') selectNode(node.id);
                     }}
@@ -268,24 +396,15 @@ export default function ConsoleMap() {
                     {/* Selected Highlight Aura */}
                     {isSelected && (
                       <circle
-                        r="24"
+                        r="18"
                         fill="#D4F53C"
-                        opacity="0.18"
-                        className="animate-ping"
+                        opacity="0.15"
                       />
                     )}
 
-                    {isComparison && !isSelected && (
-                      <circle
-                        r="20"
-                        fill="#FF8A3D"
-                        opacity="0.2"
-                      />
-                    )}
-
-                    {/* Outer Target Ring */}
+                    {/* Outer Beacon Ring */}
                     <circle
-                      r="14"
+                      r="10"
                       fill="#1B1F16"
                       stroke={
                         isSelected
@@ -296,51 +415,40 @@ export default function ConsoleMap() {
                           ? '#3A4030'
                           : '#525946'
                       }
-                      strokeWidth={isSelected ? 2.5 : 1.5}
+                      strokeWidth={isSelected ? 2 : 1}
                     />
 
-                    {/* Core Status Beacon */}
+                    {/* Core Status Dot */}
                     <circle
-                      r="6"
+                      r="4"
                       fill={isOnline ? '#D4F53C' : '#525946'}
-                      filter={isOnline ? 'url(#glow-packet)' : undefined}
                     />
 
-                    {/* Callsign Label Tag */}
-                    <g transform="translate(0, 24)">
-                      <rect
-                        x="-45"
-                        y="-7"
-                        width="90"
-                        height="18"
-                        rx="3"
-                        fill="#0E120A"
-                        stroke={isSelected ? '#D4F53C' : '#3A4030'}
-                        strokeWidth={isSelected ? 1.5 : 1}
-                      />
-                      <text
-                        x="0"
-                        y="5"
-                        fill={isSelected ? '#D4F53C' : '#F1F0EA'}
-                        fontSize="9"
-                        fontWeight="bold"
-                        fontFamily="monospace"
-                        textAnchor="middle"
-                      >
-                        {node.callsign}
-                      </text>
-                    </g>
+                    {/* Clean Callsign (no giant black box) */}
+                    <text
+                      x="0"
+                      y="20"
+                      fill={isSelected ? '#D4F53C' : '#F1F0EA'}
+                      fontSize="9"
+                      fontWeight={isSelected ? 'bold' : 'normal'}
+                      fontFamily="monospace"
+                      textAnchor="middle"
+                      style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}
+                    >
+                      {node.callsign}
+                    </text>
 
                     {/* Elevation Subtitle */}
                     <text
                       x="0"
                       y="32"
-                      fill="#A4A99A"
+                      fill="#8E9482"
                       fontSize="8"
                       fontFamily="monospace"
                       textAnchor="middle"
+                      style={{ textShadow: '0 1px 3px rgba(0,0,0,0.95)' }}
                     >
-                      {node.elevationM}m · {node.role.toUpperCase()}
+                      {node.elevationM}m
                     </text>
                   </g>
                 );
@@ -350,8 +458,40 @@ export default function ConsoleMap() {
         </svg>
       </div>
 
+      {/* Bottom Preset View Thumbnails Carousel (Matching Reference Mockup) */}
+      <div className="relative z-20 px-3 py-2 bg-deep-ground/90 border-t border-white/[0.06] flex items-center gap-2 overflow-x-auto text-[11px] font-mono">
+        <span className="text-[10px] text-mute uppercase tracking-widest pl-1 shrink-0">VIEW:</span>
+        {[
+          { id: 'topographic', label: 'TOPOGRAPHIC', icon: '◬', desc: '10m Contours' },
+          { id: '3d', label: '3D TERRAIN', icon: '▲', desc: 'Oblique Relief' },
+          { id: 'heatmap', label: 'HEATMAP', icon: '◎', desc: 'Coverage Field' },
+          { id: 'links', label: 'LINK QUALITY', icon: '⇄', desc: 'SNR & LOS' },
+          { id: 'weather', label: 'WEATHER', icon: '☁', desc: 'Simulated Isobars' },
+        ].map(preset => {
+          const isActive = mapPreset === preset.id;
+          return (
+            <button
+              key={preset.id}
+              onClick={() => {
+                setMapPreset(preset.id as any);
+                if (preset.id === '3d' && !is3dView) toggle3dView();
+                if (preset.id !== '3d' && is3dView) toggle3dView();
+              }}
+              className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 transition-all shrink-0 ${
+                isActive
+                  ? 'bg-signal text-deep-ground font-bold border-signal shadow-sm'
+                  : 'bg-surface/60 border-white/[0.08] text-ink/75 hover:text-ink hover:border-white/20'
+              }`}
+            >
+              <span className="text-xs opacity-80">{preset.icon}</span>
+              <span>{preset.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Bottom Map Status Bar */}
-      <div className="relative z-20 p-3 sm:p-4 border-t border-line bg-surface/85 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div className="relative z-20 px-4 py-2.5 border-t border-white/[0.08] bg-surface/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-mute">SELECTED:</span>

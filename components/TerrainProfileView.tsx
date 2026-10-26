@@ -101,26 +101,24 @@ export default function TerrainProfileView() {
   }
 
   return (
-    <div className="cairn-glass rounded-lg border border-line p-4 sm:p-5 text-ink font-mono text-xs space-y-4">
+    <div className="cairn-glass rounded-2xl p-5 text-ink font-mono text-xs space-y-4">
       {/* Header and Station Pair Selector */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
         <div className="flex items-center gap-2">
           <Mountain className="w-4 h-4 text-signal" />
-          <span className="font-bold tracking-wider uppercase text-signal">
-            TERRAIN PROFILE & LINE OF SIGHT
+          <span className="font-bold tracking-wider uppercase text-ink">
+            Terrain Elevation Profile
           </span>
-          <span className="px-1.5 py-0.5 rounded bg-surface border border-line text-[10px] text-mute">
-            L2 · ESTIMATED
-          </span>
+          <span className="text-[11px] text-mute">· Line of Sight Ray</span>
         </div>
 
         {/* Comparison Station Dropdown */}
         <div className="flex items-center gap-2">
-          <span className="text-mute">COMPARE WITH:</span>
+          <span className="text-mute text-[11px]">TARGET:</span>
           <select
             value={comparisonNodeId}
             onChange={e => setComparisonNode(e.target.value)}
-            className="bg-deep-ground border border-line text-ink rounded px-2 py-1 text-xs focus:border-signal outline-none"
+            className="bg-surface/80 border border-white/10 text-ink rounded-full px-3 py-1 text-xs focus:border-signal outline-none cursor-pointer"
           >
             {nodes
               .filter(n => n.id !== selectedNodeId)
@@ -134,7 +132,7 @@ export default function TerrainProfileView() {
       </div>
 
       {/* SVG Cross-Section Elevation Graphic */}
-      <div className="relative w-full overflow-hidden bg-deep-ground/90 rounded border border-line p-2">
+      <div className="relative w-full overflow-hidden bg-deep-ground/80 rounded-xl border border-white/[0.06] p-2">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="w-full h-auto select-none"
@@ -266,12 +264,12 @@ export default function TerrainProfileView() {
 
       {/* AI Link Explanation Drawer */}
       {aiExplanation && (
-        <div className="p-3.5 rounded bg-deep-ground border border-line space-y-2 mt-3 animate-fadeIn">
-          <div className="flex items-center justify-between text-[11px] text-mute border-b border-line pb-1.5">
-            <span className="text-caution font-bold">{aiExplanation.disclaimer}</span>
+        <div className="cairn-glass-subtle rounded-xl p-4 border border-white/[0.08] space-y-2.5 mt-3 animate-fadeIn">
+          <div className="flex items-center justify-between text-[11px] text-mute border-b border-white/[0.06] pb-2">
+            <span className="text-caution font-medium">{aiExplanation.disclaimer}</span>
             <button
               onClick={() => setShowRawInputs(!showRawInputs)}
-              className="hover:text-ink flex items-center gap-1 text-[10px]"
+              className="text-mute hover:text-ink flex items-center gap-1 text-[11px] font-mono transition-colors"
             >
               <span>{showRawInputs ? 'Hide Inputs' : 'Show Inputs'}</span>
               {showRawInputs ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -280,12 +278,13 @@ export default function TerrainProfileView() {
 
           <p className="text-xs text-ink leading-relaxed">{aiExplanation.explanation}</p>
           <p className="text-xs text-mute leading-relaxed">{aiExplanation.propagationDiagnosis}</p>
-          <div className="text-xs text-signal font-semibold pt-1">
-            MITIGATION: {aiExplanation.mitigationSuggestion}
+          <div className="text-xs text-signal font-semibold pt-1 flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded-full bg-signal/10 border border-signal/20 text-[10px] tracking-wider uppercase">Mitigation</span>
+            <span>{aiExplanation.mitigationSuggestion}</span>
           </div>
 
           {showRawInputs && (
-            <pre className="p-2 rounded bg-surface border border-line text-[10px] text-mute overflow-x-auto mt-2">
+            <pre className="p-3 rounded-lg bg-surface/80 border border-white/[0.06] text-[10px] text-mute overflow-x-auto mt-2">
               {JSON.stringify(aiExplanation.rawInput, null, 2)}
             </pre>
           )}

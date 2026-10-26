@@ -210,31 +210,31 @@ export default function MapboxTerrainView() {
       const isSelected = node.id === selectedNodeId;
       const isOnline = node.status === 'online';
 
-      // Custom high-tech DOM Marker element
+      // Custom sleek DOM Marker element
       const el = document.createElement('div');
-      el.className = 'group cursor-pointer select-none';
+      el.className = 'cursor-pointer select-none';
       el.style.transform = 'translate(-50%, -50%)';
 
       el.innerHTML = `
         <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
           ${
             isSelected
-              ? `<div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; background: rgba(212, 245, 60, 0.25); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>`
+              ? `<div style="position: absolute; width: 28px; height: 28px; border-radius: 50%; background: rgba(212, 245, 60, 0.2); animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>`
               : ''
           }
-          <div style="width: 22px; height: 22px; border-radius: 50%; background: #1B1F16; border: 2px solid ${
-            isSelected ? '#D4F53C' : isOnline ? '#3A4030' : '#525946'
-          }; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0,0,0,0.8);">
-            <div style="width: 8px; height: 8px; border-radius: 50%; background: ${
+          <div style="width: 14px; height: 14px; border-radius: 50%; background: #141810; border: 1.5px solid ${
+            isSelected ? '#D4F53C' : isOnline ? '#D4F53C' : '#525946'
+          }; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.8);">
+            <div style="width: 6px; height: 6px; border-radius: 50%; background: ${
               isOnline ? '#D4F53C' : '#525946'
-            }; ${isOnline ? 'box-shadow: 0 0 8px #D4F53C;' : ''}"></div>
+            };"></div>
           </div>
-          <div style="margin-top: 5px; padding: 2px 6px; background: rgba(14, 18, 10, 0.92); border: 1px solid ${
-            isSelected ? '#D4F53C' : '#3A4030'
-          }; border-radius: 4px; font-family: monospace; font-size: 9px; font-weight: bold; color: ${
+          <div style="margin-top: 3px; padding: 1px 5px; background: rgba(14, 18, 10, 0.85); backdrop-filter: blur(4px); border: 1px solid ${
+            isSelected ? '#D4F53C' : 'rgba(255,255,255,0.08)'
+          }; border-radius: 9999px; font-family: monospace; font-size: 8px; font-weight: 600; color: ${
         isSelected ? '#D4F53C' : '#F1F0EA'
-      }; white-space: nowrap; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,0.6);">
-            ${node.callsign} <span style="color: #A4A99A; font-weight: normal;">${node.elevationM}m</span>
+      }; white-space: nowrap; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+            ${node.callsign}
           </div>
         </div>
       `;
@@ -301,16 +301,13 @@ export default function MapboxTerrainView() {
   }
 
   return (
-    <div className="relative w-full h-[620px] bg-deep-ground rounded-lg border border-line overflow-hidden flex flex-col justify-between shadow-2xl">
+    <div className="relative w-full h-[600px] bg-deep-ground rounded-2xl border border-white/[0.08] overflow-hidden flex flex-col justify-between">
       {/* Top Mapbox HUD Strip */}
-      <div className="relative z-20 p-3 sm:p-4 flex items-center justify-between border-b border-line bg-surface/80 backdrop-blur-md text-xs font-mono">
+      <div className="relative z-20 px-4 py-3 flex items-center justify-between border-b border-white/[0.08] bg-surface/80 backdrop-blur-md text-xs font-mono">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-signal animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-signal" />
           <span className="text-ink font-bold tracking-wider uppercase">
-            LIVE MAPBOX 3D TERRAIN · VALAIS ALPS
-          </span>
-          <span className="hidden md:inline px-1.5 py-0.5 rounded bg-deep-ground border border-line text-signal text-[10px]">
-            STYLE: alokxmapbox/cmvnp68an00sz01s592ws09cp
+            Mapbox 3D Terrain · Valais Massif
           </span>
         </div>
 
@@ -318,20 +315,20 @@ export default function MapboxTerrainView() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsOrbiting(!isOrbiting)}
-            className={`px-2.5 py-1 rounded border transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1 rounded-full border transition-all flex items-center gap-1.5 ${
               isOrbiting
-                ? 'bg-signal text-deep-ground font-bold border-signal shadow-glow-signal'
-                : 'bg-surface text-mute border-line hover:text-ink'
+                ? 'bg-signal text-deep-ground font-bold border-signal'
+                : 'bg-surface/80 text-mute border-white/10 hover:text-ink'
             }`}
-            title="Toggle cinematic 360° terrain orbit"
+            title="Toggle 360° orbit"
           >
-            {isOrbiting ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            {isOrbiting ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
             <span>{isOrbiting ? 'Orbiting' : 'Orbit'}</span>
           </button>
 
           <button
             onClick={handleToggleTilt}
-            className="px-2.5 py-1 rounded bg-surface border border-line text-mute hover:text-ink hover:border-signal/50 transition-colors"
+            className="px-3 py-1 rounded-full bg-surface/80 border border-white/10 text-mute hover:text-ink transition-colors"
           >
             {is3D ? '2D Topo' : '3D Oblique'}
           </button>
@@ -339,7 +336,7 @@ export default function MapboxTerrainView() {
           <button
             onClick={handleResetSectorView}
             title="Reset Sector Camera"
-            className="p-1 rounded bg-surface border border-line text-mute hover:text-ink hover:border-signal/50 transition-colors"
+            className="p-1 rounded-full bg-surface/80 border border-white/10 text-mute hover:text-ink transition-colors"
           >
             <RotateCw className="w-3.5 h-3.5" />
           </button>
@@ -350,25 +347,24 @@ export default function MapboxTerrainView() {
       <div ref={mapContainerRef} className="relative w-full flex-1" />
 
       {/* Bottom Live Flight Telemetry */}
-      <div className="relative z-20 p-3 sm:p-4 border-t border-line bg-surface/85 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div className="relative z-20 px-4 py-3 border-t border-white/[0.08] bg-surface/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-mute">CAMERA:</span>
-            <span className="text-signal font-bold">{is3D ? '60° OBLIQUE RELIEF' : '0° ORTHOGRAPHIC'}</span>
+            <span className="text-ink font-semibold">{is3D ? '60° Oblique Relief' : '0° Orthographic'}</span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2">
-            <span className="text-mute">ACTIVE ROUTE:</span>
-            <span className="text-caution font-bold">
-              {selectedRoute.reachable ? `${selectedRoute.hops} HOPS (ORANGE BEAM)` : 'DISCONNECTED'}
+            <span className="text-mute">ROUTE:</span>
+            <span className={selectedRoute.reachable ? 'text-signal font-bold' : 'text-caution font-bold'}>
+              {selectedRoute.reachable ? `${selectedRoute.hops} Hops` : 'Disconnected'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] text-mute">
-          <span className="flex items-center gap-1">
-            <Radio className="w-3 h-3 text-signal animate-pulse" /> Drag right-click to tilt & rotate 3D peaks
-          </span>
+        <div className="text-[11px] text-mute flex items-center gap-1">
+          <Radio className="w-3 h-3 text-signal" />
+          <span>Right-click drag to rotate 3D peaks</span>
         </div>
       </div>
     </div>

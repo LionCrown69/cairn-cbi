@@ -9,37 +9,37 @@ export default function TimelineDemo() {
   return (
     <main className="bg-deep-ground text-ink min-h-screen flex flex-col">
       {/* Lead-in Hero section */}
-      <section className="pt-24 pb-16 px-6 sm:px-12 max-w-6xl mx-auto w-full text-center space-y-6 border-b border-line">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-surface border border-line text-xs font-mono text-signal uppercase tracking-widest mx-auto">
-          <Radio className="w-3.5 h-3.5 text-signal animate-pulse" />
-          <span>CAIRN 2-Day Sprint Architecture</span>
+      <section className="pt-24 pb-16 px-6 sm:px-12 max-w-5xl mx-auto w-full text-center space-y-6 border-b border-white/[0.08]">
+        <div className="inline-flex items-center gap-2 text-xs font-mono text-signal uppercase tracking-widest mx-auto">
+          <span className="w-1.5 h-1.5 rounded-full bg-signal" />
+          <span>Sprint Chronicle · 48 Hours</span>
         </div>
 
-        <h1 className="max-w-4xl mx-auto text-5xl sm:text-7xl font-display font-extrabold uppercase tracking-tight leading-tight text-ink">
-          The 2-Day Hackathon Timeline.
+        <h1 className="max-w-4xl mx-auto text-4xl sm:text-6xl font-display font-extrabold uppercase tracking-tight text-ink">
+          The 2-Day Timeline.
         </h1>
 
-        <p className="max-w-2xl mx-auto text-sm sm:text-base leading-relaxed text-mute font-sans">
-          From Day 1 intake at 12:00 PM through 3D terrain modeling, delay-tolerant mesh routing, verifiable AI reasoning, and real Mapbox 3D integration to the final 08:00 PM submission.
+        <p className="max-w-xl mx-auto text-xs sm:text-sm leading-relaxed text-mute font-sans">
+          From intake at 12:00 PM through 3D terrain modeling, delay-tolerant mesh routing, verifiable AI reasoning, to final submission.
         </p>
 
         {/* Quick Stat Highlights */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 max-w-4xl mx-auto">
-          <div className="p-4 rounded-lg bg-surface/60 border border-line text-left">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 max-w-3xl mx-auto">
+          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
             <span className="text-[10px] font-mono text-mute uppercase block">Daily Window</span>
-            <span className="text-sm font-mono font-bold text-signal">08:00 AM – 08:00 PM</span>
+            <span className="text-xs font-mono font-bold text-ink">08:00 AM – 08:00 PM</span>
           </div>
-          <div className="p-4 rounded-lg bg-surface/60 border border-line text-left">
+          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
             <span className="text-[10px] font-mono text-mute uppercase block">Day 1 Kickoff</span>
-            <span className="text-sm font-mono font-bold text-signal">12:00 PM Intake</span>
+            <span className="text-xs font-mono font-bold text-signal">12:00 PM Intake</span>
           </div>
-          <div className="p-4 rounded-lg bg-surface/60 border border-line text-left">
+          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
             <span className="text-[10px] font-mono text-mute uppercase block">Day 2 Kickoff</span>
-            <span className="text-sm font-mono font-bold text-caution">10:00 AM Standup</span>
+            <span className="text-xs font-mono font-bold text-caution">10:00 AM Standup</span>
           </div>
-          <div className="p-4 rounded-lg bg-surface/60 border border-line text-left">
-            <span className="text-[10px] font-mono text-mute uppercase block">Final Submission</span>
-            <span className="text-sm font-mono font-bold text-signal">08:00 PM Cut</span>
+          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
+            <span className="text-[10px] font-mono text-mute uppercase block">Final Cut</span>
+            <span className="text-xs font-mono font-bold text-signal">08:00 PM Release</span>
           </div>
         </div>
       </section>
@@ -67,9 +67,9 @@ export default function TimelineDemo() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="cairn-glass p-6 rounded-xl border border-line space-y-3">
-            <div className="w-10 h-10 rounded bg-signal/10 border border-signal/30 flex items-center justify-center text-signal">
-              <Mountain className="w-5 h-5" />
+          <div className="p-6 rounded-2xl bg-surface/30 border border-white/[0.06] space-y-3">
+            <div className="w-9 h-9 rounded-full bg-signal/10 flex items-center justify-center text-signal">
+              <Mountain className="w-4 h-4" />
             </div>
             <h3 className="font-sans font-bold text-base text-ink">
               Real & Procedural 3D Terrain
@@ -79,9 +79,9 @@ export default function TimelineDemo() {
             </p>
           </div>
 
-          <div className="cairn-glass p-6 rounded-xl border border-line space-y-3">
-            <div className="w-10 h-10 rounded bg-caution/10 border border-caution/30 flex items-center justify-center text-caution">
-              <Cpu className="w-5 h-5" />
+          <div className="p-6 rounded-2xl bg-surface/30 border border-white/[0.06] space-y-3">
+            <div className="w-9 h-9 rounded-full bg-caution/10 flex items-center justify-center text-caution">
+              <Cpu className="w-4 h-4" />
             </div>
             <h3 className="font-sans font-bold text-base text-ink">
               Verifiable AI Reasoning
@@ -91,9 +91,9 @@ export default function TimelineDemo() {
             </p>
           </div>
 
-          <div className="cairn-glass p-6 rounded-xl border border-line space-y-3">
-            <div className="w-10 h-10 rounded bg-signal/10 border border-signal/30 flex items-center justify-center text-signal">
-              <ShieldCheck className="w-5 h-5" />
+          <div className="p-6 rounded-2xl bg-surface/30 border border-white/[0.06] space-y-3">
+            <div className="w-9 h-9 rounded-full bg-signal/10 flex items-center justify-center text-signal">
+              <ShieldCheck className="w-4 h-4" />
             </div>
             <h3 className="font-sans font-bold text-base text-ink">
               Store-and-Forward Resilience
@@ -108,14 +108,14 @@ export default function TimelineDemo() {
         <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
           <Link
             href="/console"
-            className="px-6 py-3 rounded bg-signal text-deep-ground font-mono font-bold text-sm uppercase tracking-wider hover:bg-signal/90 shadow-glow-signal transition-all flex items-center gap-2"
+            className="px-6 py-2.5 rounded-full bg-signal text-deep-ground font-mono font-bold text-xs uppercase tracking-wider hover:bg-signal/90 shadow-glow-signal transition-all flex items-center gap-2"
           >
             <span>Launch Field Console</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/"
-            className="px-6 py-3 rounded bg-surface border border-line text-ink font-mono text-sm uppercase tracking-wider hover:border-signal/50 transition-all"
+            className="px-6 py-2.5 rounded-full bg-surface/50 border border-white/[0.08] text-ink font-mono text-xs uppercase tracking-wider hover:bg-white/[0.04] transition-all"
           >
             Back to Mission Overview
           </Link>

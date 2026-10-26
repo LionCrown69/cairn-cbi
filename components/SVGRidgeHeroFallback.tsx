@@ -149,37 +149,6 @@ export default function SVGRidgeHeroFallback({
           />
         </svg>
       </div>
-
-      {/* Massive Display Headline — Plate 01 Big Shoulders Typography */}
-      <div className="relative z-20 max-w-4xl mt-auto pb-4 sm:pb-8">
-        <h1 className="font-display font-extrabold uppercase text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-tight-display text-ink drop-shadow-md">
-          {headline.split('. ')[0]}.
-          <br />
-          <span className="text-signal">{headline.split('. ')[1] || 'STILL CONNECTED.'}</span>
-        </h1>
-        <p className="mt-4 sm:mt-6 text-sm sm:text-base text-mute font-mono max-w-xl leading-relaxed">
-          Zero cellular towers. Zero satellite dependency. An offline-first device mesh that routes field reports across occluded alpine valleys using peer relays.
-        </p>
-      </div>
-
-      {/* Bottom Metadata Indicators */}
-      <div className="relative z-20 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-line/60 font-mono text-xs text-mute">
-        <div className="flex items-center gap-6">
-          <span className="flex items-center gap-2 text-signal">
-            <Radio className="w-4 h-4 animate-pulse" />
-            L2 LOS ESTIMATOR: ACTIVE
-          </span>
-          <span className="hidden sm:flex items-center gap-2">
-            <Activity className="w-4 h-4 text-caution" />
-            PACKET LOSS: 0.0% (CACHED)
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-mute">
-          <ShieldCheck className="w-4 h-4 text-signal" />
-          <span>Verified Synthetic Terrain Model</span>
-          <ArrowDown className="w-3.5 h-3.5 text-signal ml-2 animate-bounce" />
-        </div>
-      </div>
     </div>
   );
 }

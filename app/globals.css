@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
 @tailwind base;
@@ -6,38 +6,43 @@
 @tailwind utilities;
 
 :root {
-  --cairn-deep-ground: #0E120A;
-  --cairn-ground: #1B1F16;
-  --cairn-surface: #252A1E;
-  --cairn-ink: #F1F0EA;
-  --cairn-mute: #A4A99A;
+  --cairn-deep-ground: #0A0D08;
+  --cairn-ground: #141810;
+  --cairn-surface: #1E2319;
+  --cairn-ink: #F4F4F0;
+  --cairn-mute: #9CA392;
   --cairn-signal: #D4F53C;
   --cairn-caution: #FF8A3D;
-  --cairn-line: #3A4030;
-  --cairn-severed: #525946;
+  --cairn-line: rgba(255, 255, 255, 0.08);
+  --cairn-severed: #EF4444;
 
-  --gradient-sky-haze: linear-gradient(180deg, #0C0F08 0%, #2A3320 38%, #6E7A3A 75%, #C9D96A 100%);
-  --gradient-glass: linear-gradient(180deg, rgba(37, 42, 30, 0.85) 0%, rgba(27, 31, 22, 0.95) 100%);
+  --gradient-sky-haze: linear-gradient(180deg, #0A0D08 0%, #161C12 40%, #28331E 75%, #4C5E33 100%);
+  --gradient-glass: linear-gradient(180deg, rgba(25, 30, 21, 0.75) 0%, rgba(14, 18, 12, 0.9) 100%);
 }
 
 body {
   background-color: var(--cairn-deep-ground);
   color: var(--cairn-ink);
-  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glass panel with 1px engineered border */
+/* Refined tactile glass panel */
 .cairn-glass {
-  background: var(--gradient-glass);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--cairn-line);
+  background: linear-gradient(180deg, rgba(27, 31, 22, 0.72) 0%, rgba(18, 22, 14, 0.88) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .cairn-glass-subtle {
-  background: rgba(27, 31, 22, 0.7);
-  border: 1px solid rgba(58, 64, 48, 0.6);
+  background: rgba(22, 26, 18, 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* High-contrast status badges */

@@ -41,83 +41,83 @@ export default function NodeControlPanel() {
   }
 
   return (
-    <div className="cairn-glass rounded-lg border border-line p-4 sm:p-5 text-ink font-mono text-xs space-y-5">
+    <div className="cairn-glass rounded-2xl p-5 text-ink font-mono text-xs space-y-5">
       {/* Node Header & Online/Offline Control */}
-      <div className="flex items-center justify-between border-b border-line pb-3">
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="font-display font-extrabold text-xl tracking-wider uppercase text-ink">
+            <h2 className="font-display font-extrabold text-2xl tracking-wider uppercase text-ink">
               {selectedNode.callsign}
             </h2>
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+              className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                 isOnline
-                  ? 'border-signal text-signal bg-signal/10'
-                  : 'border-severed text-mute bg-surface'
+                  ? 'bg-signal/15 text-signal'
+                  : 'bg-white/10 text-mute'
               }`}
             >
-              {isOnline ? 'Online (Sim)' : 'Offline (Sim)'}
+              {isOnline ? 'Online' : 'Offline'}
             </span>
           </div>
-          <p className="text-[11px] text-mute uppercase tracking-wide">
-            ROLE: {selectedNode.role.replace('_', ' ')} · ELEVATION: {selectedNode.elevationM}M ASL
+          <p className="text-[11px] text-mute uppercase tracking-wide mt-0.5">
+            {selectedNode.role.replace('_', ' ')} · {selectedNode.elevationM}m ASL
           </p>
         </div>
 
         {/* Toggle Online/Offline Button */}
         <button
           onClick={() => toggleNodeStatus(selectedNode.id)}
-          className={`px-3 py-1.5 rounded font-mono text-xs font-bold transition-all flex items-center gap-1.5 border ${
+          className={`px-3 py-1.5 rounded-full font-mono text-xs transition-all flex items-center gap-1.5 ${
             isOnline
-              ? 'bg-surface border-line text-mute hover:border-caution hover:text-caution'
-              : 'bg-signal border-signal text-deep-ground hover:bg-signal/90 shadow-glow-signal'
+              ? 'bg-surface/80 border border-white/10 text-mute hover:text-caution hover:border-caution/40'
+              : 'bg-signal text-deep-ground font-bold shadow-glow-signal'
           }`}
-          title="Toggle station offline/online to test topology healing"
+          title="Toggle station offline/online"
         >
           <Power className="w-3.5 h-3.5" />
           <span>{isOnline ? 'Take Offline' : 'Bring Online'}</span>
         </button>
       </div>
 
-      {/* Telemetry Grid */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-3">
-        <div className="p-2.5 rounded bg-surface/60 border border-line/60">
-          <span className="text-[10px] text-mute block">BATTERY CHARGE</span>
-          <div className="flex items-center gap-2 mt-1">
-            <Battery className="w-4 h-4 text-signal" />
+      {/* Clean Telemetry Matrix (borderless pairs) */}
+      <div className="grid grid-cols-2 gap-4 py-1">
+        <div>
+          <span className="text-[10px] text-mute block tracking-wider uppercase">Battery</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <Battery className="w-3.5 h-3.5 text-signal" />
             <span className="font-bold text-sm text-ink">{selectedNode.batteryPct}%</span>
           </div>
         </div>
 
-        <div className="p-2.5 rounded bg-surface/60 border border-line/60">
-          <span className="text-[10px] text-mute block">ANTENNA MAST</span>
-          <div className="flex items-center gap-2 mt-1">
-            <Radio className="w-4 h-4 text-signal" />
-            <span className="font-bold text-sm text-ink">{selectedNode.antennaHeightM} m</span>
+        <div>
+          <span className="text-[10px] text-mute block tracking-wider uppercase">Antenna Mast</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <Radio className="w-3.5 h-3.5 text-signal" />
+            <span className="font-bold text-sm text-ink">{selectedNode.antennaHeightM}m</span>
           </div>
         </div>
 
-        <div className="p-2.5 rounded bg-surface/60 border border-line/60">
-          <span className="text-[10px] text-mute block">TX POWER (EIRP)</span>
-          <span className="font-bold text-sm text-ink block mt-1">
-            {selectedNode.txPowerDbm} dBm (500mW)
+        <div>
+          <span className="text-[10px] text-mute block tracking-wider uppercase">TX Power</span>
+          <span className="font-bold text-sm text-ink block mt-0.5">
+            {selectedNode.txPowerDbm} dBm
           </span>
         </div>
 
-        <div className="p-2.5 rounded bg-surface/60 border border-line/60">
-          <span className="text-[10px] text-mute block">COORDINATES</span>
-          <span className="font-bold text-[11px] text-ink block mt-1">
-            {selectedNode.lat.toFixed(4)}°N, {selectedNode.lon.toFixed(4)}°E
+        <div>
+          <span className="text-[10px] text-mute block tracking-wider uppercase">Coordinates</span>
+          <span className="font-bold text-xs text-ink block mt-0.5">
+            {selectedNode.lat.toFixed(3)}°N, {selectedNode.lon.toFixed(3)}°E
           </span>
         </div>
       </div>
 
       {/* Active Routing Path to Command */}
-      <div className="p-3 rounded bg-surface/40 border border-line space-y-2">
+      <div className="pt-3 border-t border-white/[0.08] space-y-1.5">
         <div className="flex items-center justify-between text-[11px]">
-          <span className="text-mute flex items-center gap-1.5 font-bold uppercase">
-            <GitFork className="w-3.5 h-3.5 text-signal" />
-            Route to Base Command:
+          <span className="text-mute uppercase flex items-center gap-1.5">
+            <GitFork className="w-3 h-3 text-signal" />
+            Path to Command:
           </span>
           <span className={route.reachable ? 'text-signal font-bold' : 'text-caution font-bold'}>
             {route.reachable ? `${route.hops} Hops (${route.distanceKm} km)` : 'No Viable Path'}
@@ -130,7 +130,7 @@ export default function NodeControlPanel() {
               const node = nodes.find(n => n.id === nodeId);
               return (
                 <React.Fragment key={nodeId}>
-                  <span className="px-2 py-0.5 rounded bg-deep-ground border border-line text-ink">
+                  <span className="text-ink font-semibold">
                     {node?.callsign}
                   </span>
                   {idx < route.path.length - 1 && <span className="text-signal">→</span>}
@@ -141,33 +141,31 @@ export default function NodeControlPanel() {
         ) : (
           <div className="text-[11px] text-caution flex items-center gap-1.5 pt-1">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-            <span>Transmissions will be held in local flash cache until a relay route opens.</span>
+            <span>Held in flash memory until next hop available.</span>
           </div>
         )}
       </div>
 
       {/* Immediate Neighbors */}
-      <div>
-        <span className="text-[11px] text-mute font-bold uppercase block mb-2">
-          Direct Neighbors ({neighbors.length})
+      <div className="pt-3 border-t border-white/[0.08]">
+        <span className="text-[10px] text-mute font-bold tracking-wider uppercase block mb-2">
+          Direct Links ({neighbors.length})
         </span>
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {neighbors.map(({ neighborId, link }) => {
             const neighbor = nodes.find(n => n.id === neighborId);
             const isLinkOnline = link.status === 'online';
             return (
               <div
                 key={neighborId}
-                className="flex items-center justify-between p-2 rounded bg-surface/50 border border-line text-xs"
+                className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-surface/30 text-xs"
               >
-                <span className="font-bold text-ink">{neighbor?.callsign}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-mute">{link.distanceKm} km</span>
+                <span className="text-ink font-medium">{neighbor?.callsign}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-mute text-[11px]">{link.distanceKm} km</span>
                   <span
-                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                      isLinkOnline
-                        ? 'border-signal text-signal bg-signal/10'
-                        : 'border-severed text-mute'
+                    className={`text-[10px] font-bold uppercase ${
+                      isLinkOnline ? 'text-signal' : 'text-mute/60'
                     }`}
                   >
                     {isLinkOnline ? 'LOS Clear' : 'Occluded'}
@@ -180,24 +178,24 @@ export default function NodeControlPanel() {
       </div>
 
       {/* Field Report Transmission Form */}
-      <form onSubmit={handleSend} className="space-y-2.5 pt-3 border-t border-line">
+      <form onSubmit={handleSend} className="space-y-2.5 pt-3 border-t border-white/[0.08]">
         <div className="flex items-center justify-between">
-          <label htmlFor="msg-input" className="text-[11px] font-bold text-signal uppercase flex items-center gap-1">
-            <Send className="w-3.5 h-3.5" />
+          <label htmlFor="msg-input" className="text-[11px] font-bold text-ink uppercase flex items-center gap-1.5">
+            <Send className="w-3 h-3 text-signal" />
             Transmit Field Report
           </label>
-          <div className="flex items-center gap-1 text-[10px]">
+          <div className="flex items-center gap-1">
             {(['routine', 'urgent', 'alert'] as const).map(p => (
               <button
                 type="button"
                 key={p}
                 onClick={() => setPriority(p)}
-                className={`px-1.5 py-0.5 rounded uppercase border transition-all ${
+                className={`px-2 py-0.5 rounded-full text-[10px] uppercase transition-all ${
                   priority === p
                     ? p === 'alert'
-                      ? 'bg-caution text-deep-ground font-bold border-caution'
-                      : 'bg-signal text-deep-ground font-bold border-signal'
-                    : 'bg-surface text-mute border-line'
+                      ? 'bg-caution text-deep-ground font-bold'
+                      : 'bg-signal text-deep-ground font-bold'
+                    : 'text-mute hover:text-ink'
                 }`}
               >
                 {p}
@@ -212,26 +210,21 @@ export default function NodeControlPanel() {
             type="text"
             value={messageText}
             onChange={e => setMessageText(e.target.value)}
-            placeholder="Type situation update or GPS waypoint..."
-            className="flex-1 bg-deep-ground border border-line rounded px-3 py-2 text-xs text-ink placeholder:text-mute/60 focus:border-signal outline-none"
+            placeholder="Type report..."
+            className="flex-1 bg-surface/40 border border-white/10 rounded-full px-3.5 py-1.5 text-xs text-ink placeholder:text-mute/50 focus:border-signal outline-none"
           />
           <button
             type="submit"
             disabled={!isOnline}
-            className={`px-4 py-2 rounded font-bold uppercase text-xs flex items-center gap-1.5 transition-all ${
+            className={`px-4 py-1.5 rounded-full font-bold uppercase text-xs transition-all ${
               isOnline
                 ? 'bg-signal text-deep-ground hover:bg-signal/90 shadow-glow-signal'
-                : 'bg-surface text-mute border border-line cursor-not-allowed'
+                : 'bg-surface text-mute cursor-not-allowed opacity-50'
             }`}
           >
-            <span>Send</span>
+            Send
           </button>
         </div>
-        {!isOnline && (
-          <span className="text-[10px] text-caution block">
-            Station is powered off. Turn station online to originate transmissions.
-          </span>
-        )}
       </form>
     </div>
   );

@@ -20,17 +20,17 @@ module.exports = {
         severed: '#525946',
       },
       fontFamily: {
-        display: ['"Big Shoulders Display"', 'sans-serif'],
-        sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       boxShadow: {
-        'glow-signal': '0 0 25px rgba(212, 245, 60, 0.35)',
-        'glow-caution': '0 0 25px rgba(255, 138, 61, 0.35)',
+        'glow-signal': '0 0 25px rgba(212, 245, 60, 0.25)',
+        'glow-caution': '0 0 25px rgba(255, 138, 61, 0.25)',
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.45)',
       },
       lineHeight: {
-        'tight-display': '0.86',
+        'tight-display': '1.08',
       }
     },
   },

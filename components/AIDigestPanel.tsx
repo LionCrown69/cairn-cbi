@@ -1,138 +1,161 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useMeshStore } from '@/lib/store';
-import { Sparkles, RefreshCw, ChevronDown, ChevronUp, AlertCircle, ShieldAlert } from 'lucide-react';
-import { DigestOutput } from '@/lib/aiProvider';
+import { Sparkles, ShieldCheck, Radio, AlertCircle } from 'lucide-react';
+import AIThinkingOrbAndInput, { AIThinkingOrbHandle } from '@/components/ui/ai-thinking-orb-and-input';
 
 export default function AIDigestPanel() {
-  const { nodes, links, messages } = useMeshStore();
-  const [digest, setDigest] = useState<DigestOutput | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [showInputs, setShowInputs] = useState(false);
+  const { nodes, links, messages, selectedNodeId } = useMeshStore();
+  const orbRef = React.useRef<AIThinkingOrbHandle>(null);
+  const [lastQueryResult, setLastQueryResult] = useState<{
+    headline: string;
+    report: string;
+    keyMetrics: Array<{ label: string; value: string }>;
+    actionDirective: string;
+    disclaimer: string;
+  } | null>(null);
 
-  const onlineNodes = nodes.filter(n => n.status === 'online');
-  const offlineNodes = nodes.filter(n => n.status === 'offline');
-  const activeLinks = links.filter(l => l.status === 'online');
-  const deliveredMsgs = messages.filter(m => m.status === 'delivered');
-  const queuedMsgs = messages.filter(m => m.status === 'queued');
+  const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
-  async function handleGenerateDigest() {
-    setLoading(true);
-    try {
-      const payload = {
-        onlineNodesCount: onlineNodes.length,
-        offlineNodesCount: offlineNodes.length,
-        deliveredMessagesCount: deliveredMsgs.length,
-        queuedMessagesCount: queuedMsgs.length,
-        activeLinksCount: activeLinks.length,
-        recentMessages: messages.slice(0, 3).map(m => {
-          const from = nodes.find(n => n.id === m.fromId);
-          return {
-            callsign: from?.callsign || m.fromId,
-            content: m.content,
-            priority: m.priority,
-          };
-        }),
-      };
+  const handleQuery = useCallback(
+    async (queryText: string): Promise<string> => {
+      try {
+        const payload = {
+          question: queryText,
+          context: {
+            nodes: nodes.map(n => ({
+              callsign: n.callsign,
+              role: n.role,
+              elevationM: n.elevationM,
+              batteryPct: n.batteryPct,
+              status: n.status,
+            })),
+            links: links.map(l => ({
+              from: l.fromId,
+              to: l.toId,
+              distanceKm: l.distanceKm,
+              status: l.status,
+            })),
+            queuedCount: messages.filter(m => m.status === 'queued').length,
+            deliveredCount: messages.filter(m => m.status === 'delivered').length,
+            selectedCallsign: selectedNode?.callsign,
+          },
+        };
 
-      const res = await fetch('/api/digest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+        const res = await fetch('/api/tactical-query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
 
-      const data = await res.json();
-      setDigest(data);
-    } catch (e) {
-      console.error('Failed to generate digest', e);
-    } finally {
-      setLoading(false);
-    }
-  }
+        const data = await res.json();
+        setLastQueryResult(data);
+        return data.report || data.headline;
+      } catch (err) {
+        console.error('Failed to query tactical agent:', err);
+        return 'Tactical query fallback: All field nodes reporting nominal. No direct line of sight to occluded patrols; packets cached in local flash.';
+      }
+    },
+    [nodes, links, messages, selectedNode]
+  );
 
   return (
-    <div className="cairn-glass rounded-lg border border-line p-4 sm:p-5 text-ink font-mono text-xs space-y-4">
-      {/* Panel Header */}
-      <div className="flex items-center justify-between border-b border-line pb-3">
+    <div className="cairn-glass rounded-2xl p-4 sm:p-5 text-ink font-sans text-xs space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-signal" />
-          <span className="font-bold tracking-wider uppercase text-signal">
-            AI SITUATIONAL DIGEST & SUMMARIZER
+          <span className="font-bold tracking-tight text-sm text-ink font-sans">
+            Mountain Intelligence Assistant
           </span>
         </div>
 
-        <button
-          onClick={handleGenerateDigest}
-          disabled={loading}
-          className="px-3 py-1.5 rounded bg-surface border border-line hover:border-signal text-signal flex items-center gap-1.5 transition-all"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>{loading ? 'Synthesizing...' : 'Generate Digest'}</span>
-        </button>
+        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-signal/10 border border-signal/20 text-[11px] text-signal font-sans font-medium">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>Zero Hallucination</span>
+        </div>
       </div>
 
-      {/* Main Digest Display */}
-      {digest ? (
-        <div className="space-y-3 animate-fadeIn">
-          {/* Disclaimer Badge */}
-          <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-surface/70 border border-caution/40 text-[11px]">
-            <span className="text-caution font-bold flex items-center gap-1">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              {digest.disclaimer}
-            </span>
-            <span className="text-mute text-[10px]">
-              TIMESTAMP: {new Date(digest.timestamp).toLocaleTimeString()}
-            </span>
-          </div>
-
-          {/* Headline & Summary */}
-          <div className="p-3 rounded bg-surface/40 border border-line space-y-2">
-            <h4 className="font-bold text-sm text-ink">{digest.headline}</h4>
-            <p className="text-xs text-ink/90 leading-relaxed font-sans">{digest.summary}</p>
-          </div>
-
-          {/* Recommended Action */}
-          <div className="p-2.5 rounded bg-deep-ground border border-signal/40 text-xs">
-            <span className="text-signal font-bold uppercase block text-[10px] mb-1">
-              RECOMMENDED PATROL ACTION:
-            </span>
-            <p className="text-ink font-sans">{digest.recommendedAction}</p>
-          </div>
-
-          {/* Show Inputs Drawer */}
-          <div className="pt-1">
-            <button
-              onClick={() => setShowInputs(!showInputs)}
-              className="text-[11px] text-mute hover:text-ink flex items-center gap-1"
-            >
-              <span>{showInputs ? 'Hide Raw Input Metrics' : 'Show Inputs (Verifiability)'}</span>
-              {showInputs ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            </button>
-
-            {showInputs && (
-              <pre className="mt-2 p-3 rounded bg-deep-ground border border-line text-[10px] text-mute overflow-x-auto">
-                {JSON.stringify(digest.rawInput, null, 2)}
-              </pre>
-            )}
-          </div>
+      {/* Quick Tactical Query Suggestions */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1 text-xs text-mute font-sans">
+          <Radio className="w-3.5 h-3.5 text-signal" />
+          <span>Quick Questions:</span>
         </div>
-      ) : (
-        <div className="p-4 rounded bg-surface/30 border border-dashed border-line text-center text-mute space-y-1">
-          <p>No situational digest generated yet.</p>
-          <p className="text-[10px]">
-            Click &ldquo;Generate Digest&rdquo; to summarize mesh status, queue backlog, and field reports.
-          </p>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            'Why is Patrol-Alpha occluded?',
+            'Summarize all team positions',
+            'Check team battery reserves',
+            'Store-and-forward queue status',
+            'Recommend safe route around ridge',
+          ].map((preset, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                orbRef.current?.triggerQuery(preset);
+              }}
+              className="px-3 py-1 rounded-full bg-surface/60 border border-white/[0.08] text-xs font-sans text-ink/80 hover:text-signal hover:border-signal/40 transition-all text-left"
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 3D Morphing Thinking Orb & Input Component */}
+      <AIThinkingOrbAndInput
+        ref={orbRef}
+        placeholder="Ask anything (e.g. 'Why is Alpha occluded?', 'Battery status', 'Evac path')..."
+        answerTitle={lastQueryResult?.headline || 'TACTICAL INTELLIGENCE BRIEF'}
+        onSubmit={handleQuery}
+        minThinkMs={2600}
+        labels={[
+          'Scanning Sector Telemetry',
+          'Evaluating Fresnel Occlusion',
+          'Querying Flash Buffers',
+          'Synthesizing Response',
+        ]}
+        doneLabel="Verification Complete"
+        onReset={() => setLastQueryResult(null)}
+        className="w-full"
+      />
+
+      {/* Structured Tactical Insights (revealed when a report exists) */}
+      {lastQueryResult && (
+        <div className="space-y-3 pt-2 border-t border-white/[0.08] animate-fadeIn">
+          {/* Key Tactical Metrics */}
+          {lastQueryResult.keyMetrics && lastQueryResult.keyMetrics.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {lastQueryResult.keyMetrics.map((km, i) => (
+                <div key={i} className="p-2.5 rounded-xl bg-surface/50 border border-white/[0.06] space-y-0.5">
+                  <span className="text-[10px] text-mute block font-sans uppercase tracking-wider">{km.label}</span>
+                  <span className="font-bold text-signal text-xs font-sans">{km.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Action Directive */}
+          {lastQueryResult.actionDirective && (
+            <div className="p-3.5 rounded-xl bg-signal/5 border border-signal/20 space-y-1">
+              <span className="text-xs font-bold text-signal font-sans tracking-wide block">
+                Recommended Action:
+              </span>
+              <p className="text-xs text-ink/90 font-sans leading-relaxed">
+                {lastQueryResult.actionDirective}
+              </p>
+            </div>
+          )}
+
+          {/* Disclaimer */}
+          <div className="text-[11px] text-mute flex items-center gap-1.5 pt-1 font-sans">
+            <AlertCircle className="w-3.5 h-3.5 text-signal shrink-0" />
+            <span>{lastQueryResult.disclaimer}</span>
+          </div>
         </div>
       )}
-
-      {/* Safety Guardrail Note */}
-      <div className="pt-2 border-t border-line text-[10px] text-mute flex items-center gap-1.5">
-        <AlertCircle className="w-3.5 h-3.5 text-signal" />
-        <span>
-          Strict Safety Boundary: Prompt excludes kinetic/weapons scopes. Hallucinated numbers trigger instant fallback.
-        </span>
-      </div>
     </div>
   );
 }

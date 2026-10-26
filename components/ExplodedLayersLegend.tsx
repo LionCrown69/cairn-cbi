@@ -35,29 +35,29 @@ export default function ExplodedLayersLegend() {
   ];
 
   return (
-    <div className="cairn-glass rounded-lg border border-line p-4 sm:p-5 text-ink font-mono text-xs space-y-4">
-      <div className="flex items-center justify-between border-b border-line pb-3">
+    <div className="cairn-glass rounded-2xl p-5 text-ink font-mono text-xs space-y-4">
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-signal" />
-          <h3 className="font-bold tracking-wider uppercase text-signal">
-            PLATE 03 · EXPLODED DATA LAYERS
+          <h3 className="font-bold tracking-wider uppercase text-ink">
+            Exploded Data Layers
           </h3>
         </div>
 
         <button
           onClick={toggleExplodedView}
-          className={`px-2.5 py-1 rounded text-[11px] border transition-all ${
+          className={`px-3 py-1 rounded-full text-xs transition-all ${
             activeExplodedView
-              ? 'bg-caution text-deep-ground font-bold border-caution'
-              : 'bg-surface text-mute border-line hover:text-ink'
+              ? 'bg-caution text-deep-ground font-bold'
+              : 'bg-surface/80 text-mute border border-white/10 hover:text-ink'
           }`}
         >
-          {activeExplodedView ? '3D Exploded Active' : 'Explode Layers'}
+          {activeExplodedView ? 'Exploded Active' : 'Explode'}
         </button>
       </div>
 
       <p className="text-xs text-mute leading-relaxed font-sans">
-        To prevent false claims of capability, every visual element strictly belongs to one of three transparent layers. An estimate is never displayed as an observed physical fact.
+        Every visual element belongs to one of three transparent layers. Estimates are never displayed as observed facts.
       </p>
 
       {/* Layer Cards */}

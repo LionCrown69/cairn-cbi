@@ -15,29 +15,26 @@ export default function MessageQueuePanel() {
   });
 
   return (
-    <div className="cairn-glass rounded-lg border border-line p-4 sm:p-5 text-ink font-mono text-xs space-y-4">
+    <div className="cairn-glass rounded-2xl p-5 text-ink font-sans text-xs space-y-4">
       {/* Panel Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
         <div className="flex items-center gap-2">
           <Archive className="w-4 h-4 text-signal" />
-          <span className="font-bold tracking-wider uppercase text-signal">
-            STORE-AND-FORWARD MESSAGE LOG & TIMELINE
-          </span>
-          <span className="px-1.5 py-0.5 rounded bg-surface border border-line text-[10px] text-mute">
-            L3 · OBSERVED (SIM)
+          <span className="font-bold tracking-tight text-sm text-ink font-sans">
+            Store & Forward Message Feed
           </span>
         </div>
 
         {/* Status Filter Buttons */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 bg-surface/60 p-0.5 rounded-full border border-white/[0.08]">
           {(['all', 'delivered', 'queued'] as const).map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-2.5 py-1 rounded uppercase text-[11px] border transition-all ${
+              className={`px-2.5 py-0.5 rounded-full uppercase text-[10px] transition-all ${
                 filter === f
-                  ? 'bg-signal text-deep-ground font-bold border-signal'
-                  : 'bg-surface text-mute border-line hover:text-ink'
+                  ? 'bg-signal text-deep-ground font-bold'
+                  : 'text-mute hover:text-ink'
               }`}
             >
               {f} ({messages.filter(m => (f === 'all' ? true : m.status === f)).length})
@@ -47,9 +44,9 @@ export default function MessageQueuePanel() {
       </div>
 
       {/* Messages Scrollable List */}
-      <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+      <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
         {filteredMessages.length === 0 ? (
-          <div className="text-center py-6 text-mute">No packets in current filter.</div>
+          <div className="text-center py-8 text-mute">No packets in buffer.</div>
         ) : (
           filteredMessages.map(msg => {
             const fromNode = nodes.find(n => n.id === msg.fromId);
@@ -59,10 +56,10 @@ export default function MessageQueuePanel() {
             return (
               <div
                 key={msg.id}
-                className={`p-3 rounded border transition-all ${
+                className={`p-3 rounded-xl border transition-all ${
                   isDelivered
-                    ? 'bg-surface/50 border-line hover:border-line/80'
-                    : 'bg-caution/10 border-caution/50 animate-pulse'
+                    ? 'bg-surface/30 border-white/[0.06]'
+                    : 'bg-caution/10 border-caution/30'
                 }`}
               >
                 {/* Meta Row */}
