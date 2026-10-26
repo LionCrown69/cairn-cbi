@@ -4,13 +4,14 @@ import { aiProvider } from '@/lib/aiProvider';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { question, context, apiKey } = body;
+    const { question, query, context, apiKey } = body;
+    const promptText = question || query;
 
-    if (!question || typeof question !== 'string') {
-      return NextResponse.json({ error: 'Question is required' }, { status: 400 });
+    if (!promptText || typeof promptText !== 'string') {
+      return NextResponse.json({ error: 'Question or query is required' }, { status: 400 });
     }
 
-    const result = await aiProvider.queryTacticalAgent(question, {
+    const result = await aiProvider.queryTacticalAgent(promptText, {
       ...(context || {
         nodes: [],
         links: [],
