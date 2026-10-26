@@ -240,104 +240,10 @@ export default function Timeline({
     return HACKATHON_SPRINT_DATA.filter((m) => m.day === dayFilter);
   }, [dayFilter]);
 
-<<<<<<< HEAD
   const handleFilterChange = useCallback((filter: 'all' | 1 | 2) => {
+    sound.playClick();
     setDayFilter(filter);
   }, []);
-=======
-  // Sync active milestone when filter changes
-  useEffect(() => {
-    if (filteredMilestones.length > 0) {
-      const exists = filteredMilestones.some((m) => m.id === activeMilestoneId);
-      if (!exists) {
-        setActiveMilestoneId(filteredMilestones[0].id);
-      }
-    }
-  }, [dayFilter, filteredMilestones, activeMilestoneId]);
-
-  const activeMilestone = useMemo(() => {
-    return (
-      HACKATHON_SPRINT_DATA.find((m) => m.id === activeMilestoneId) ||
-      HACKATHON_SPRINT_DATA[0]
-    );
-  }, [activeMilestoneId]);
-
-  const activeIndex = useMemo(() => {
-    return filteredMilestones.findIndex((m) => m.id === activeMilestone.id);
-  }, [filteredMilestones, activeMilestone]);
-
-  const scrollToIndex = (index: number) => {
-    if (index < 0 || index >= filteredMilestones.length) return;
-    sound.playClick();
-    const target = filteredMilestones[index];
-    setActiveMilestoneId(target.id);
-
-    if (scrollContainerRef.current) {
-      const cardEl = scrollContainerRef.current.querySelector(
-        `[data-milestone-id="${target.id}"]`
-      ) as HTMLElement | null;
-      if (cardEl) {
-        cardEl.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
-      }
-    }
-  };
-
-  const handlePrev = () => {
-    const prevIdx = Math.max(0, activeIndex - 1);
-    scrollToIndex(prevIdx);
-  };
-
-  const handleNext = () => {
-    const nextIdx = Math.min(filteredMilestones.length - 1, activeIndex + 1);
-    scrollToIndex(nextIdx);
-  };
-
-  // Keyboard navigation when user interacts with timeline
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      handlePrev();
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault();
-      handleNext();
-    }
-  };
-
-  const getCategoryIcon = (iconName: HackathonMilestone["categoryIcon"]) => {
-    switch (iconName) {
-      case "research":
-        return <Eye className="w-4 h-4" />;
-      case "identity":
-        return <Radio className="w-4 h-4" />;
-      case "code":
-        return <Terminal className="w-4 h-4" />;
-      case "math":
-        return <Activity className="w-4 h-4" />;
-      case "ui":
-        return <Layers className="w-4 h-4" />;
-      case "3d":
-        return <Mountain className="w-4 h-4" />;
-      case "ai":
-        return <Cpu className="w-4 h-4" />;
-      case "map":
-        return <Sparkles className="w-4 h-4" />;
-      case "lab":
-        return <Sliders className="w-4 h-4" />;
-      case "resilience":
-        return <ShieldCheck className="w-4 h-4" />;
-      case "a11y":
-        return <CheckCircle2 className="w-4 h-4" />;
-      case "launch":
-        return <Award className="w-4 h-4" />;
-      default:
-        return <Clock className="w-4 h-4" />;
-    }
-  };
->>>>>>> local-refined
 
   return (
     <section className={cn('py-20 px-6 sm:px-12 max-w-5xl mx-auto w-full border-b border-white/[0.08]', className)}>
