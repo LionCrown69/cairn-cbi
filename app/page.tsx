@@ -20,6 +20,8 @@ import {
   Sparkles,
   Mountain,
   Zap,
+  Send,
+  Lock,
 } from 'lucide-react';
 
 export default function StoryPage() {
@@ -288,7 +290,79 @@ export default function StoryPage() {
         </div>
       </section>
 
-      {/* SECTION 4: SPRINT TIMELINE */}
+      {/* SECTION 6: TACTICAL FIELD DISPATCH & AI RADIO PROTOCOL */}
+      <section className="py-24 px-6 sm:px-12 max-w-6xl mx-auto w-full border-b border-white/[0.08]" id="dispatch-preview">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div>
+            <div className="text-xs font-mono uppercase tracking-widest text-signal mb-2 flex items-center gap-2">
+              <Send className="w-3.5 h-3.5 text-signal" />
+              <span>Real-Time Store-and-Forward Comms</span>
+            </div>
+            <h2 className="font-sans font-bold text-3xl sm:text-5xl tracking-tight text-ink">
+              Tactical team dispatch & radio feed.
+            </h2>
+            <p className="text-sm sm:text-base text-mute font-sans max-w-xl mt-2 leading-relaxed font-light">
+              Exchange geotagged SITREPs across occluded ridgelines. Raw observations typed in sub-zero snow are instantly polished by Google Gemini 2.5 Flash into standardized SAR radio protocol.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dispatch"
+              className="px-5 py-2.5 rounded-full bg-signal text-deep-ground font-mono font-bold text-xs uppercase tracking-wider hover:bg-signal/90 transition-all flex items-center gap-2 shadow-sm"
+            >
+              <span>Open Dispatch Hub</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/login"
+              className="px-4 py-2.5 rounded-full bg-surface/50 border border-white/[0.08] text-xs font-mono text-ink hover:bg-white/[0.04] transition-all flex items-center gap-1.5"
+            >
+              <Lock className="w-3 h-3 text-signal" />
+              <span>Operator Auth</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Dispatch Preview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-6 rounded-3xl bg-surface/30 border border-white/[0.08] backdrop-blur-xl space-y-3">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="font-bold text-ink">PATROL-ALPHA &rarr; BASE-COMMAND</span>
+              <span className="px-2 py-0.5 rounded-full bg-signal/15 text-signal text-[10px] font-bold">ROUTINE</span>
+            </div>
+            <p className="text-xs sm:text-sm font-sans text-ink/90 leading-relaxed">
+              Cirque ascent underway. Wind 22kt NW, light spindrift. All 4 members green. Multi-hop path via North Ridge confirmed.
+            </p>
+            <div className="flex items-center justify-between pt-2 border-t border-white/[0.05] text-[10px] font-mono text-mute">
+              <span>Hops: ALPHA &rarr; RIDGE-RELAY &rarr; BASE</span>
+              <span className="text-signal flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Verified Receipt</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-caution/[0.04] border border-caution/20 backdrop-blur-xl space-y-3">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="font-bold text-caution">SENSOR-COL &rarr; BASE-COMMAND</span>
+              <span className="px-2 py-0.5 rounded-full bg-caution/20 text-caution text-[10px] font-bold">TELEMETRY</span>
+            </div>
+            <p className="text-xs sm:text-sm font-sans text-ink/90 leading-relaxed">
+              Col anemometer: Baro 704hPa (-2.4hPa/3h), Temp -9.4°C. First Fresnel zone clearance holding at +14.2m margin.
+            </p>
+            <div className="flex items-center justify-between pt-2 border-t border-white/[0.05] text-[10px] font-mono text-mute">
+              <span>Hops: SENSOR-COL &rarr; BRAVO &rarr; BASE</span>
+              <span className="text-signal flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Verified Receipt</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 7: SPRINT TIMELINE */}
       <Timeline
         title="Engineering Sprint Log"
         subtitle="Chronological log from Day 1 intake at 12:00 PM to Day 2 final delivery at 08:00 PM."
@@ -372,17 +446,31 @@ export default function StoryPage() {
           Simulate ridge occlusion, observe automatic store-and-forward queueing, and trigger AI propagation analysis in the live Field Console.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
           <Link
             href="/console"
-            className="px-7 py-3.5 rounded-full bg-signal text-deep-ground font-sans font-semibold text-xs uppercase tracking-wider hover:bg-signal/90 shadow-glow-signal transition-all flex items-center gap-2"
+            className="px-6 py-3.5 rounded-full bg-signal text-deep-ground font-sans font-semibold text-xs uppercase tracking-wider hover:bg-signal/90 shadow-glow-signal transition-all flex items-center gap-2"
           >
             <span>Open Field Console</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
+            href="/dispatch"
+            className="px-6 py-3.5 rounded-full bg-surface/80 border border-signal/30 text-signal font-sans font-semibold text-xs uppercase tracking-wider hover:bg-signal/10 transition-all flex items-center gap-2"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>Launch Dispatch Hub</span>
+          </Link>
+          <Link
+            href="/login"
+            className="px-5 py-3.5 rounded-full bg-surface/50 border border-white/[0.08] text-ink font-sans font-medium text-xs uppercase tracking-wider hover:bg-white/[0.04] transition-all flex items-center gap-1.5"
+          >
+            <Lock className="w-3.5 h-3.5 text-mute" />
+            <span>Transceiver Auth</span>
+          </Link>
+          <Link
             href="/method"
-            className="px-7 py-3.5 rounded-full bg-surface/50 border border-white/[0.08] text-ink font-sans font-medium text-xs uppercase tracking-wider hover:bg-white/[0.04] transition-all"
+            className="px-5 py-3.5 rounded-full bg-surface/50 border border-white/[0.08] text-ink font-sans font-medium text-xs uppercase tracking-wider hover:bg-white/[0.04] transition-all"
           >
             Read Method & Math
           </Link>

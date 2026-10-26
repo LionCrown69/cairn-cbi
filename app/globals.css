@@ -18,6 +18,50 @@
 
   --gradient-sky-haze: linear-gradient(180deg, #0A0D08 0%, #161C12 40%, #28331E 75%, #4C5E33 100%);
   --gradient-glass: linear-gradient(180deg, rgba(25, 30, 21, 0.75) 0%, rgba(14, 18, 12, 0.9) 100%);
+  --gradient-radial-spotlight: radial-gradient(circle at 50% 0%, rgba(212, 245, 60, 0.08) 0%, rgba(14, 18, 10, 0) 65%);
+  --gradient-radial-caution: radial-gradient(circle at 50% 0%, rgba(255, 138, 61, 0.08) 0%, rgba(14, 18, 10, 0) 65%);
+  --gradient-card-minimal: linear-gradient(180deg, rgba(30, 36, 24, 0.4) 0%, rgba(18, 22, 15, 0.6) 100%);
+}
+
+/* Atmospheric Minimal Mesh Gradients */
+.bg-alpine-mesh {
+  background-color: var(--cairn-deep-ground);
+  background-image: 
+    radial-gradient(circle at 20% 15%, rgba(212, 245, 60, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(255, 138, 61, 0.03) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(142, 155, 112, 0.02) 0%, transparent 60%);
+}
+
+.gradient-border-subtle {
+  position: relative;
+}
+.gradient-border-subtle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.gradient-border-signal {
+  position: relative;
+}
+.gradient-border-signal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(212, 245, 60, 0.35) 0%, rgba(212, 245, 60, 0.05) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 body {

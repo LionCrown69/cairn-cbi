@@ -20,6 +20,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Clock,
+  Send,
+  UserCheck,
 } from 'lucide-react';
 import { useMeshStore } from '@/lib/store';
 import { sound } from '@/lib/soundEffects';
@@ -53,9 +55,10 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Story', icon: Radio },
     { href: '/console', label: 'Field Console', icon: Compass },
-    { href: '/timeline', label: 'Hackathon Timeline', icon: Layers },
+    { href: '/dispatch', label: 'Dispatch Hub', icon: Send },
+    { href: '/timeline', label: 'Timeline', icon: Layers },
     { href: '/method', label: 'Method', icon: Sliders },
-    { href: '/design', label: 'Design System', icon: ShieldAlert },
+    { href: '/login', label: 'Auth', icon: UserCheck },
   ];
 
   const toggleSound = () => {
