@@ -128,11 +128,20 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       camera.position.set(0, 15, 23);
       camera.lookAt(0, 1, 0);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
       renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.shadowMap.enabled = true;
       container.appendChild(renderer.domElement);
+
+      let isHeroVisible = true;
+      const heroObserver = new IntersectionObserver(
+        ([entry]) => {
+          isHeroVisible = entry.isIntersecting;
+        },
+        { threshold: 0.05 }
+      );
+      heroObserver.observe(container);
 
       // --- LIGHTING (Tactical Alpine Sun & Haze) ---
       const ambientLight = new THREE.AmbientLight(0x252a1e, 1.2);
@@ -297,6 +306,9 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       const animate = (currentTime: number) => {
         animationFrameId = requestAnimationFrame(animate);
 
+        // Skip render computations when Hero is scrolled out of viewport
+        if (!isHeroVisible) return;
+
         frameCount++;
         if (currentTime - lastTime >= 1000) {
           setFps(frameCount);
@@ -342,6 +354,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       window.addEventListener('resize', handleResize);
 
       return () => {
+        heroObserver.disconnect();
         cancelAnimationFrame(animationFrameId);
         window.removeEventListener('resize', handleResize);
         container.removeEventListener('pointerdown', onPointerDown);

@@ -8,16 +8,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import {
   Mountain,
   Radio,
-  Eye,
   RotateCw,
   Compass,
-  Layers,
-  Sparkles,
-  Maximize2,
   Activity,
-  CheckCircle2,
-  ShieldCheck,
-  ChevronRight,
 } from 'lucide-react';
 import { sound } from '@/lib/soundEffects';
 
@@ -95,7 +88,6 @@ export default function GLBTerrainViewer({
   const [loading, setLoading] = useState<boolean>(true);
   const [loadProgress, setLoadProgress] = useState<number>(0);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
-  const [showLosBeams, setShowLosBeams] = useState<boolean>(true);
   const [cameraView, setCameraView] = useState<'oblique' | 'horizon' | 'topdown'>('oblique');
   const [stats, setStats] = useState<{ meshCount: number; vertexCount: number; towerCount: number; sentryCount: number }>({
     meshCount: 74,
@@ -114,6 +106,7 @@ export default function GLBTerrainViewer({
   const animFrameIdRef = useRef<number | null>(null);
   const dracoLoaderRef = useRef<DRACOLoader | null>(null);
   const modelRadiusRef = useRef<number>(150);
+  const isVisibleRef = useRef<boolean>(true);
 
   const curTerrain = TERRAIN_PRESETS.find((t) => t.id === selectedTerrainId) || TERRAIN_PRESETS[0];
 
@@ -140,18 +133,27 @@ export default function GLBTerrainViewer({
     controls.update();
   }, []);
 
-  // Update OrbitControls autoRotate when state changes
+  // Update OrbitControls autoRotate when state changes without destroying scene
   useEffect(() => {
     if (controlsRef.current) {
       controlsRef.current.autoRotate = autoRotate;
-      controlsRef.current.autoRotateSpeed = 0.6;
+      controlsRef.current.autoRotateSpeed = 0.55;
     }
   }, [autoRotate]);
 
-  // 1. Initialize Three.js Scene ONCE on mount
+  // 1. Initialize Three.js Scene ONCE on mount + IntersectionObserver for lag-free rendering
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    // IntersectionObserver to pause WebGL rendering when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
 
     // A. Scene setup
     const scene = new THREE.Scene();
@@ -166,11 +168,11 @@ export default function GLBTerrainViewer({
     camera.position.set(110, 85, 145);
     cameraRef.current = camera;
 
-    // C. WebGL Renderer
+    // C. WebGL Renderer with performance-optimized pixelRatio
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     rendererRef.current = renderer;
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.35;
@@ -185,23 +187,22 @@ export default function GLBTerrainViewer({
     controlsRef.current = controls;
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.maxPolarAngle = Math.PI / 2.05; // Do not go below ground
+    controls.maxPolarAngle = Math.PI / 2.05;
     controls.minDistance = 20;
     controls.maxDistance = 1200;
     controls.target.set(0, 10, 0);
     controls.autoRotate = autoRotate;
-    controls.autoRotateSpeed = 0.6;
+    controls.autoRotateSpeed = 0.55;
 
-    // E. Lighting
+    // E. Alpine Lighting (1024x1024 shadow map for ultra-smooth 60+ FPS)
     const ambientLight = new THREE.AmbientLight(0x223020, 2.0);
     scene.add(ambientLight);
 
-    // Sunlight
     const sunLight = new THREE.DirectionalLight(0xfff5e6, 3.2);
     sunLight.position.set(160, 220, 120);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.mapSize.width = 1024;
+    sunLight.shadow.mapSize.height = 1024;
     sunLight.shadow.camera.near = 10;
     sunLight.shadow.camera.far = 800;
     const d = 220;
@@ -211,12 +212,10 @@ export default function GLBTerrainViewer({
     sunLight.shadow.camera.bottom = -d;
     scene.add(sunLight);
 
-    // Cairn Signal Lime Rim Light (Emphasizes granite crests)
     const rimLight = new THREE.DirectionalLight(0xd4f53c, 1.8);
     rimLight.position.set(-180, 80, -120);
     scene.add(rimLight);
 
-    // Subtle Cyan Fill
     const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.7);
     fillLight.position.set(0, -50, 140);
     scene.add(fillLight);
@@ -226,20 +225,22 @@ export default function GLBTerrainViewer({
     losBeamsGroupRef.current = losGroup;
     scene.add(losGroup);
 
-    // Initialize DRACOLoader with local decoder in public/draco/
+    // Initialize DRACOLoader
     const draco = new DRACOLoader();
     draco.setDecoderPath('/draco/');
     dracoLoaderRef.current = draco;
 
-    // Animation Loop
+    // Animation Loop with Visibility Guard (Prevents background rendering lag)
     const clock = new THREE.Clock();
     const animate = () => {
       animFrameIdRef.current = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+
+      // Only render if container is visible in viewport!
+      if (!isVisibleRef.current) return;
 
       controls.update();
 
-      // Pulse beacon rings
+      const elapsedTime = clock.getElapsedTime();
       beaconPulsesRef.current.forEach((mesh, idx) => {
         const s = 1 + 0.3 * Math.sin(elapsedTime * 4 + idx * 0.8);
         mesh.scale.set(s, s, s);
@@ -262,6 +263,7 @@ export default function GLBTerrainViewer({
     window.addEventListener('resize', handleResize);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
       draco.dispose();
@@ -271,9 +273,9 @@ export default function GLBTerrainViewer({
         container.removeChild(renderer.domElement);
       }
     };
-  }, []); // Run once on mount
+  }, []);
 
-  // 2. Load Model whenever selectedTerrainId changes
+  // 2. Load Model whenever selectedTerrainId changes (with complete VRAM garbage collection)
   useEffect(() => {
     const scene = sceneRef.current;
     const camera = cameraRef.current;
@@ -284,8 +286,19 @@ export default function GLBTerrainViewer({
     setLoading(true);
     setLoadProgress(0);
 
-    // Remove previous model
+    // Remove previous model and dispose geometries/materials to prevent memory leaks
     if (currentModelRef.current) {
+      currentModelRef.current.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          mesh.geometry?.dispose();
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((m) => m.dispose());
+          } else if (mesh.material) {
+            mesh.material.dispose();
+          }
+        }
+      });
       scene.remove(currentModelRef.current);
       currentModelRef.current = null;
     }
@@ -478,39 +491,47 @@ export default function GLBTerrainViewer({
               Rendering {curTerrain.name}
             </span>
             <span className="text-[10px] text-mute">
-              Decompressing Blender 3D terrain assets ({loadProgress > 0 ? `${loadProgress}%` : 'DRACO'})...
+              Loading terrain sector ({loadProgress > 0 ? `${loadProgress}%` : 'DRACO'})...
             </span>
           </div>
         </div>
       )}
 
-      {/* Top Left: Sector Badge & Tactical Info (when Inspector is active) */}
+      {/* Top Left: Unified Tactical Sector HUD (One single, non-overlapping glass card) */}
       {showInspectorPanel && (
-        <div className="absolute top-4 left-4 z-20 pointer-events-none space-y-2 max-w-xs">
-          <div className="flex items-center gap-2">
-            <div className="px-3 py-1 rounded-full bg-surface/90 border border-white/[0.08] backdrop-blur-md text-xs font-mono flex items-center gap-2 shadow-lg">
-              <span className="w-2 h-2 rounded-full bg-signal animate-pulse" />
-              <span className="text-ink font-bold">{curTerrain.code}</span>
-              <span className="text-mute">·</span>
-              <span className="text-signal">{curTerrain.name}</span>
+        <div className="absolute top-4 left-4 z-20 pointer-events-none max-w-sm">
+          <div className="p-3.5 rounded-2xl bg-deep-ground/85 border border-white/[0.1] backdrop-blur-xl shadow-2xl font-mono text-xs space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full bg-signal text-deep-ground font-black text-[10px] tracking-wider whitespace-nowrap">
+                  {curTerrain.code}
+                </span>
+                <span className="font-sans font-bold text-ink text-sm tracking-tight whitespace-nowrap">
+                  {curTerrain.name}
+                </span>
+              </div>
+              <span className="text-[11px] text-signal font-semibold px-2 py-0.5 rounded-md bg-signal/10 border border-signal/20 whitespace-nowrap">
+                {curTerrain.elevation} ASL
+              </span>
             </div>
 
-            <div className="px-2.5 py-1 rounded-full bg-surface/80 border border-white/[0.08] backdrop-blur-md text-[11px] font-mono text-mute flex items-center gap-1.5">
-              <Compass className="w-3 h-3 text-signal" />
-              <span>{curTerrain.elevation} ASL</span>
-            </div>
-          </div>
-
-          <div className="bg-surface/85 border border-white/[0.06] p-3 rounded-2xl backdrop-blur-md font-mono text-[11px] text-mute space-y-2 shadow-xl">
-            <p className="text-[11px] text-mute/90 font-sans leading-relaxed">
+            <p className="text-[11px] text-mute/90 font-sans font-normal leading-relaxed line-clamp-2">
               {curTerrain.description}
             </p>
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px]">
-              <span className="text-signal font-semibold">{stats.towerCount} Relays</span>
-              <span className="text-white/20">·</span>
-              <span className="text-ink font-semibold">{stats.sentryCount} Sentries</span>
-              <span className="text-white/20">·</span>
-              <span className="text-signal/90 font-semibold">{stats.meshCount} Nodes</span>
+
+            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-mute">
+              <span className="flex items-center gap-1 text-signal font-medium whitespace-nowrap">
+                <Radio className="w-3 h-3" />
+                <span>{stats.towerCount} Relays</span>
+              </span>
+              <span className="text-white/20">|</span>
+              <span className="text-ink font-medium whitespace-nowrap">{stats.sentryCount} Sentries</span>
+              <span className="text-white/20">|</span>
+              <span className="text-signal/90 font-medium whitespace-nowrap">{stats.meshCount} Nodes</span>
+              <span className="text-white/20">|</span>
+              <span className={`whitespace-nowrap font-bold ${curTerrain.occlusionRisk === 'Severe' ? 'text-severed' : 'text-caution'}`}>
+                {curTerrain.occlusionRisk} Risk
+              </span>
             </div>
           </div>
         </div>
@@ -518,19 +539,18 @@ export default function GLBTerrainViewer({
 
       {/* Top Right: Camera Presets & Auto Rotate Toggle */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-auto">
-        {/* Camera Angle Presets */}
-        <div className="flex items-center p-1 rounded-full bg-surface/85 border border-white/[0.08] backdrop-blur-md text-xs font-mono shadow-lg">
+        <div className="flex items-center p-1 rounded-full bg-deep-ground/85 border border-white/[0.1] backdrop-blur-xl text-xs font-mono shadow-xl">
           <button
             onClick={() => applyCameraView('oblique')}
-            className={`px-3 py-1 rounded-full transition-all ${
+            className={`px-3 py-1 rounded-full transition-all whitespace-nowrap ${
               cameraView === 'oblique' ? 'bg-signal text-deep-ground font-bold shadow-sm' : 'text-mute hover:text-ink'
             }`}
           >
-            Oblique 45°
+            45° Oblique
           </button>
           <button
             onClick={() => applyCameraView('horizon')}
-            className={`px-3 py-1 rounded-full transition-all ${
+            className={`px-3 py-1 rounded-full transition-all whitespace-nowrap ${
               cameraView === 'horizon' ? 'bg-signal text-deep-ground font-bold shadow-sm' : 'text-mute hover:text-ink'
             }`}
           >
@@ -538,7 +558,7 @@ export default function GLBTerrainViewer({
           </button>
           <button
             onClick={() => applyCameraView('topdown')}
-            className={`px-3 py-1 rounded-full transition-all ${
+            className={`px-3 py-1 rounded-full transition-all whitespace-nowrap ${
               cameraView === 'topdown' ? 'bg-signal text-deep-ground font-bold shadow-sm' : 'text-mute hover:text-ink'
             }`}
           >
@@ -552,23 +572,23 @@ export default function GLBTerrainViewer({
             sound.playClick();
             setAutoRotate(!autoRotate);
           }}
-          className={`p-2 rounded-full border backdrop-blur-md transition-all shadow-lg ${
+          className={`w-8 h-8 rounded-full border backdrop-blur-xl flex items-center justify-center transition-all shadow-xl shrink-0 ${
             autoRotate
-              ? 'bg-signal/20 border-signal/40 text-signal'
-              : 'bg-surface/80 border-white/[0.08] text-mute hover:text-ink'
+              ? 'bg-signal/20 border-signal/50 text-signal shadow-glow-signal'
+              : 'bg-deep-ground/85 border-white/[0.1] text-mute hover:text-ink'
           }`}
           title={autoRotate ? 'Pause 3D rotation' : 'Start 3D rotation'}
         >
-          <RotateCw className={`w-3.5 h-3.5 ${autoRotate ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
+          <RotateCw className={`w-3.5 h-3.5 ${autoRotate ? 'animate-spin' : ''}`} style={{ animationDuration: '8s' }} />
         </button>
       </div>
 
-      {/* Bottom Floating Bar: 4 Blender Terrain Selector (Only shown if showTerrainSelector is true) */}
+      {/* Bottom Floating Bar: 4 Blender Terrain Selector (Zero text wrap, perfectly pill-shaped) */}
       {showTerrainSelector && (
-        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-auto w-[92%] sm:w-auto">
-          <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 p-1.5 rounded-2xl sm:rounded-full bg-surface/85 border border-white/[0.1] backdrop-blur-xl shadow-2xl">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-mute px-3 hidden sm:inline">
-              Blender Terrains:
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-auto max-w-[94%]">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-deep-ground/90 border border-white/[0.12] backdrop-blur-2xl shadow-2xl overflow-x-auto no-scrollbar">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-mute px-3 hidden sm:inline whitespace-nowrap">
+              Sectors:
             </span>
 
             {TERRAIN_PRESETS.map((preset) => {
@@ -577,16 +597,16 @@ export default function GLBTerrainViewer({
                 <button
                   key={preset.id}
                   onClick={() => handleSelectTerrain(preset)}
-                  className={`px-3.5 py-1.5 rounded-xl sm:rounded-full text-xs font-mono transition-all flex items-center gap-2 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
                     isSelected
                       ? 'bg-signal text-deep-ground font-bold shadow-glow-signal'
-                      : 'text-mute hover:text-ink hover:bg-white/[0.04]'
+                      : 'text-mute hover:text-ink hover:bg-white/[0.06]'
                   }`}
                 >
-                  <span className={`text-[10px] font-mono ${isSelected ? 'text-deep-ground' : 'text-signal'}`}>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-deep-ground/25 text-deep-ground' : 'bg-signal/15 text-signal'}`}>
                     {preset.code}
                   </span>
-                  <span>{preset.name}</span>
+                  <span className="font-sans font-medium whitespace-nowrap">{preset.name}</span>
                 </button>
               );
             })}
