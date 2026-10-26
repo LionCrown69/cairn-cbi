@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useMeshStore } from '@/lib/store';
+import { sound } from '@/lib/soundEffects';
 import { Compass, RotateCw, Eye, ShieldAlert, Maximize2, Radio, Play, Pause } from 'lucide-react';
 
 const MAPBOX_TOKEN =
@@ -240,6 +241,7 @@ export default function MapboxTerrainView() {
       `;
 
       el.addEventListener('click', () => {
+        sound.playBeaconPing();
         selectNode(node.id);
         map.flyTo({
           center: [node.lon, node.lat],
@@ -277,6 +279,7 @@ export default function MapboxTerrainView() {
   }, [isOrbiting]);
 
   function handleToggleTilt() {
+    sound.playClick();
     const map = mapRef.current;
     if (!map) return;
     if (is3D) {
@@ -289,6 +292,7 @@ export default function MapboxTerrainView() {
   }
 
   function handleResetSectorView() {
+    sound.playClick();
     const map = mapRef.current;
     if (!map) return;
     map.flyTo({

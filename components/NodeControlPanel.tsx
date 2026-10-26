@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useMeshStore } from '@/lib/store';
+import { sound } from '@/lib/soundEffects';
 import { Power, Send, Battery, Radio, Compass, Wifi, WifiOff, GitFork, AlertTriangle } from 'lucide-react';
 import { getNeighbors } from '@/lib/routing';
 
@@ -36,8 +37,18 @@ export default function NodeControlPanel() {
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!messageText.trim()) return;
+    sound.playBeaconPing();
     sendMessage(selectedNode!.id, 'node-cmd', messageText.trim(), priority);
     setMessageText('');
+  }
+
+  function handleToggle() {
+    if (isOnline) {
+      sound.playAlert();
+    } else {
+      sound.playSuccess();
+    }
+    toggleNodeStatus(selectedNode!.id);
   }
 
   return (
@@ -66,7 +77,7 @@ export default function NodeControlPanel() {
 
         {/* Toggle Online/Offline Button */}
         <button
-          onClick={() => toggleNodeStatus(selectedNode.id)}
+          onClick={handleToggle}
           className={`px-3 py-1.5 rounded font-mono text-xs font-bold transition-all flex items-center gap-1.5 border ${
             isOnline
               ? 'bg-surface border-line text-mute hover:border-caution hover:text-caution'

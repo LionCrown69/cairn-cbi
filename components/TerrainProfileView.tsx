@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useMeshStore } from '@/lib/store';
 import { Mountain, Radio, AlertTriangle, CheckCircle2, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { LinkExplainerOutput } from '@/lib/aiProvider';
+import { sound } from '@/lib/soundEffects';
 
 export default function TerrainProfileView() {
   const {
@@ -71,6 +72,7 @@ export default function TerrainProfileView() {
   };
 
   async function handleExplainWithAi() {
+    sound.playClick();
     setIsLoadingAi(true);
     try {
       const payload = {
@@ -93,8 +95,10 @@ export default function TerrainProfileView() {
       });
       const data = await res.json();
       setAiExplanation(data);
+      sound.playSuccess();
     } catch (e) {
       console.error('Failed to explain link', e);
+      sound.playAlert();
     } finally {
       setIsLoadingAi(false);
     }
@@ -119,7 +123,10 @@ export default function TerrainProfileView() {
           <span className="text-mute">COMPARE WITH:</span>
           <select
             value={comparisonNodeId}
-            onChange={e => setComparisonNode(e.target.value)}
+            onChange={e => {
+              sound.playClick();
+              setComparisonNode(e.target.value);
+            }}
             className="bg-deep-ground border border-line text-ink rounded px-2 py-1 text-xs focus:border-signal outline-none"
           >
             {nodes

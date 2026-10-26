@@ -24,6 +24,7 @@ import {
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { sound } from "@/lib/soundEffects";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -308,6 +309,7 @@ export default function Timeline({
 
   const scrollToIndex = (index: number) => {
     if (index < 0 || index >= filteredMilestones.length) return;
+    sound.playClick();
     const target = filteredMilestones[index];
     setActiveMilestoneId(target.id);
 
