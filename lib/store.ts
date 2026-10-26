@@ -146,6 +146,9 @@ export interface MeshStore {
   selectNode: (id: string) => void;
   setComparisonNode: (id: string) => void;
   toggleNodeStatus: (id: string) => void;
+  setNodeStatus: (id: string, status: 'online' | 'offline') => void;
+  simulateSeverance: () => void;
+  healTopology: () => void;
   sendMessage: (fromId: string, toId: string, content: string, priority?: 'routine' | 'urgent' | 'alert') => void;
   toggle3dView: () => void;
   setActiveLayer: (layer: 'all' | 'l1' | 'l2' | 'l3') => void;
@@ -224,6 +227,97 @@ export const useMeshStore = create<MeshStore>((set, get) => ({
       } catch (e) {
         console.error('Storage write error', e);
       }
+    }
+
+    set({
+      nodes: updatedNodes,
+      links: newLinks,
+      messages: updatedMessages,
+      systemAnnouncements: [announcement, ...state.systemAnnouncements.slice(0, 8)],
+    });
+  },
+
+  setNodeStatus: (id: string, status: 'online' | 'offline') => {
+    const state = get();
+    const updatedNodes: MeshNode[] = state.nodes.map(n => {
+      if (n.id === id) {
+        return { ...n, status, lastHeardIso: new Date().toISOString() };
+      }
+      return n;
+    });
+
+    const targetNode = updatedNodes.find(n => n.id === id);
+    const newLinks = evaluateMeshLinks(updatedNodes);
+    const { updatedMessages, newlyDeliveredCount } = processMessageQueue(state.messages, updatedNodes, newLinks);
+
+    const announcement = targetNode
+      ? `${targetNode.callsign} set to ${status.toUpperCase()}. Topology recomputed.${newlyDeliveredCount > 0 ? ` ${newlyDeliveredCount} queued packet(s) delivered.` : ''}`
+      : 'Topology updated.';
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY_NODES, JSON.stringify(updatedNodes));
+        localStorage.setItem(STORAGE_KEY_MSGS, JSON.stringify(updatedMessages));
+      } catch (e) {
+        console.error('Storage write error', e);
+      }
+    }
+
+    set({
+      nodes: updatedNodes,
+      links: newLinks,
+      messages: updatedMessages,
+      systemAnnouncements: [announcement, ...state.systemAnnouncements.slice(0, 8)],
+    });
+  },
+
+  simulateSeverance: () => {
+    const state = get();
+    const updatedNodes: MeshNode[] = state.nodes.map(n => {
+      if (n.id === 'node-relay-1') {
+        return { ...n, status: 'offline', lastHeardIso: new Date().toISOString() };
+      }
+      return n;
+    });
+
+    const newLinks = evaluateMeshLinks(updatedNodes);
+    const { updatedMessages } = processMessageQueue(state.messages, updatedNodes, newLinks);
+
+    const announcement = 'SIMULATION: Alpine Tempest Severance triggered. RELAY-RIDGE-NORTH knocked offline. Packets held in store-and-forward queue.';
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY_NODES, JSON.stringify(updatedNodes));
+        localStorage.setItem(STORAGE_KEY_MSGS, JSON.stringify(updatedMessages));
+      } catch (e) {}
+    }
+
+    set({
+      nodes: updatedNodes,
+      links: newLinks,
+      messages: updatedMessages,
+      systemAnnouncements: [announcement, ...state.systemAnnouncements.slice(0, 8)],
+    });
+  },
+
+  healTopology: () => {
+    const state = get();
+    const updatedNodes: MeshNode[] = state.nodes.map(n => ({
+      ...n,
+      status: 'online',
+      lastHeardIso: new Date().toISOString(),
+    }));
+
+    const newLinks = evaluateMeshLinks(updatedNodes);
+    const { updatedMessages, newlyDeliveredCount } = processMessageQueue(state.messages, updatedNodes, newLinks);
+
+    const announcement = `TOPOLOGY HEALED: Saddle Col Relay deployed online. All paths restored. ${newlyDeliveredCount} packet(s) flushed from queue.`;
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY_NODES, JSON.stringify(updatedNodes));
+        localStorage.setItem(STORAGE_KEY_MSGS, JSON.stringify(updatedMessages));
+      } catch (e) {}
     }
 
     set({

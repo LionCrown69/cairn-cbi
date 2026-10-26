@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useMeshStore } from '@/lib/store';
+import { sound } from '@/lib/soundEffects';
 import { Archive, CheckCircle2, Clock, GitCommit, ShieldCheck } from 'lucide-react';
 
 export default function MessageQueuePanel() {
@@ -30,7 +31,10 @@ export default function MessageQueuePanel() {
           {(['all', 'delivered', 'queued'] as const).map(f => (
             <button
               key={f}
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                sound.playClick();
+                setFilter(f);
+              }}
               className={`px-2.5 py-0.5 rounded-full uppercase text-[10px] transition-all ${
                 filter === f
                   ? 'bg-signal text-deep-ground font-bold'

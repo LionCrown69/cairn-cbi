@@ -5,7 +5,23 @@ import * as THREE from 'three';
 import SVGRidgeHeroFallback from './SVGRidgeHeroFallback';
 import MapboxTerrainView from './MapboxTerrainView';
 import { getTerrainElevation } from '@/lib/terrainModel';
-import { Radio, ChevronRight, Activity, Eye, Layers, Globe, Mountain, Play, Pause, Sparkles, ArrowRight, GitFork } from 'lucide-react';
+import {
+  Radio,
+  ChevronRight,
+  Activity,
+  Eye,
+  Layers,
+  Globe,
+  Mountain,
+  Play,
+  Pause,
+  Compass,
+  Crosshair,
+  Sparkles,
+  ArrowRight,
+  GitFork,
+} from 'lucide-react';
+import { sound } from '@/lib/soundEffects';
 
 interface Props {
   onExploreConsole?: () => void;
@@ -18,6 +34,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
   const [heroMode, setHeroMode] = useState<'3d-mesh' | 'mapbox-3d' | 'svg-plate01'>('3d-mesh');
   const [fps, setFps] = useState<number>(60);
   const [isRotating, setIsRotating] = useState(true);
+  const [perspective, setPerspective] = useState<'oblique' | 'topdown' | 'horizon'>('oblique');
 
   const scenes = [
     {
@@ -34,7 +51,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       badge: 'VALLEY ISOLATION',
       headline: 'SHADOWED IN THE CIRQUE.',
       subtext: 'Field teams drop behind a 2,800m granite wall. Direct line-of-sight to base camp is severed completely.',
-      cameraTarget: { x: -7, y: 9, z: 17, lookY: 2 },
+      cameraTarget: { x: -8, y: 8, z: 17, lookY: 1.5 },
     },
     {
       id: 2,
@@ -42,7 +59,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       badge: 'LOS BREACH DETECTED',
       headline: 'THE MOUNTAIN INTERVENES.',
       subtext: 'Direct transmission fails. Packets are cached safely in local non-volatile flash buffers (Queued).',
-      cameraTarget: { x: -4, y: 7, z: 14, lookY: 2 },
+      cameraTarget: { x: -5, y: 6.5, z: 13, lookY: 2 },
     },
     {
       id: 3,
@@ -50,7 +67,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       badge: 'RELAY HOP ESTABLISHED',
       headline: 'THE NETWORK IS VISIBLE.',
       subtext: 'An alpine saddle relay crests the col. Stored packets arc across the peaks via 2-hop store-and-forward mesh.',
-      cameraTarget: { x: 3, y: 11, z: 18, lookY: 0 },
+      cameraTarget: { x: 4, y: 11, z: 18, lookY: 0 },
     },
     {
       id: 4,
@@ -61,6 +78,17 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       cameraTarget: { x: 0, y: 17, z: 22, lookY: -1 },
     },
   ];
+
+  // Perspective presets for camera
+  const getCameraTargetForPerspective = (sceneIdx: number, p: 'oblique' | 'topdown' | 'horizon') => {
+    if (p === 'topdown') {
+      return { x: 0, y: 28, z: 0.2, lookY: 0 };
+    }
+    if (p === 'horizon') {
+      return { x: -9, y: 4.5, z: 12, lookY: 3 };
+    }
+    return scenes[sceneIdx].cameraTarget;
+  };
 
   useEffect(() => {
     if (heroMode !== '3d-mesh') return;
@@ -117,7 +145,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       rimLight.position.set(-20, 15, -15);
       scene.add(rimLight);
 
-      // --- SCULPTED 3D SOLID MOUNTAIN RELIEF MESH (NOT JUST DOTS!) ---
+      // --- SCULPTED 3D SOLID MOUNTAIN RELIEF MESH ---
       const meshSize = 36;
       const meshSegments = 90;
       const terrainGeo = new THREE.PlaneGeometry(meshSize, meshSize, meshSegments, meshSegments);
@@ -136,12 +164,10 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
         const x = posAttr.getX(i);
         const z = posAttr.getZ(i);
 
-        // Height displacement based on procedural alpine DEM
         const rawElev = getTerrainElevation(x * 0.38, -z * 0.38);
         const y = (rawElev - 1920) * 0.0042;
         posAttr.setY(i, y);
 
-        // Calculate elevation normalized color gradient
         const t = Math.min(Math.max((rawElev - 1950) / 1150, 0), 1);
         const vertexColor = new THREE.Color();
         if (t < 0.35) {
@@ -180,7 +206,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       const wireframeMesh = new THREE.Mesh(terrainGeo, wireframeMat);
       scene.add(wireframeMesh);
 
-      // --- GLOWING DOT-WAVE OVERLAY ON TOP OF PEAKS (PLATE 02) ---
+      // Glowing Dot-Wave Points
       const pointsMat = new THREE.PointsMaterial({
         size: 0.12,
         vertexColors: true,
@@ -188,10 +214,10 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
         opacity: 0.85,
       });
       const dotPoints = new THREE.Points(terrainGeo, pointsMat);
-      dotPoints.position.y += 0.03; // slight offset above mountain mesh
+      dotPoints.position.y += 0.03;
       scene.add(dotPoints);
 
-      // --- TACTICAL PACKET DELIVERY BEAM (TACTICAL ORANGE ARC) ---
+      // --- TACTICAL PACKET DELIVERY BEAM ---
       const routePoints = [
         new THREE.Vector3(-7.5, 1.4, 5.5),  // Node Alpha in Valley
         new THREE.Vector3(-2.2, 4.3, 1.8),  // Saddle Relay 2 on Col
@@ -211,7 +237,6 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
 
       // Vertical Locator Stems and Summit Beacons
       routePoints.forEach((pos, idx) => {
-        // Beacon Sphere
         const isRelay = idx === 1 || idx === 2;
         const beaconMat = new THREE.MeshBasicMaterial({
           color: isRelay ? 0xd4f53c : 0xff8a3d,
@@ -220,7 +245,6 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
         beaconSphere.position.copy(pos);
         scene.add(beaconSphere);
 
-        // Ground anchor line
         const stemMat = new THREE.LineBasicMaterial({ color: 0x55642d });
         const stemGeom = new THREE.BufferGeometry().setFromPoints([
           new THREE.Vector3(pos.x, 0, pos.z),
@@ -237,11 +261,37 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       );
       scene.add(pulseMesh);
 
+      // Drag to orbit interaction handlers
+      let isDragging = false;
+      let prevMouseX = 0;
+      let userRotation = 0;
+
+      const onPointerDown = (e: PointerEvent) => {
+        isDragging = true;
+        prevMouseX = e.clientX;
+      };
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - prevMouseX;
+        userRotation += deltaX * 0.005;
+        prevMouseX = e.clientX;
+      };
+
+      const onPointerUp = () => {
+        isDragging = false;
+      };
+
+      container.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+
       // Animation Loop
       let lastTime = performance.now();
       let frameCount = 0;
       let packetProgress = 0;
       let rotationAngle = 0;
+      const targetLookAt = new THREE.Vector3(0, 1, 0);
 
       const animate = (currentTime: number) => {
         animationFrameId = requestAnimationFrame(animate);
@@ -253,13 +303,23 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
           lastTime = currentTime;
         }
 
-        // Slow smooth cinematic rotation
-        if (isRotating) {
+        // Automatic gentle rotation
+        if (isRotating && !isDragging) {
           rotationAngle += 0.0015;
-          mountainMesh.rotation.y = rotationAngle;
-          wireframeMesh.rotation.y = rotationAngle;
-          dotPoints.rotation.y = rotationAngle;
         }
+
+        const totalRotation = rotationAngle + userRotation;
+        mountainMesh.rotation.y = totalRotation;
+        wireframeMesh.rotation.y = totalRotation;
+        dotPoints.rotation.y = totalRotation;
+
+        // Smooth camera lerp to scene target position
+        const target = getCameraTargetForPerspective(activeScene, perspective);
+        const desiredPos = new THREE.Vector3(target.x, target.y, target.z);
+        camera.position.lerp(desiredPos, 0.04);
+
+        targetLookAt.lerp(new THREE.Vector3(0, target.lookY, 0), 0.04);
+        camera.lookAt(targetLookAt);
 
         // Animate packet along tactical orange curve
         packetProgress = (packetProgress + 0.005) % 1;
@@ -283,6 +343,9 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       return () => {
         cancelAnimationFrame(animationFrameId);
         window.removeEventListener('resize', handleResize);
+        container.removeEventListener('pointerdown', onPointerDown);
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
         if (renderer.domElement && container.contains(renderer.domElement)) {
           container.removeChild(renderer.domElement);
         }
@@ -292,68 +355,117 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       console.warn('WebGL fallback triggered:', err);
       setWebglSupported(false);
     }
-  }, [heroMode, isRotating]);
+  }, [heroMode, isRotating, activeScene, perspective]);
 
   const curScene = scenes[activeScene];
 
+  const handleSceneClick = (index: number) => {
+    sound.playClick();
+    setActiveScene(index);
+  };
+
   return (
     <div className="relative w-full h-[90vh] min-h-[660px] max-h-[920px] overflow-hidden bg-deep-ground flex flex-col justify-between border-b border-white/[0.08] select-none">
-      {/* Discreet Engine Mode Controls */}
-      <div className="relative z-20 px-6 py-4 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 pointer-events-auto text-xs font-mono">
-          <span className="w-2 h-2 rounded-full bg-signal animate-pulse" />
-          <span className="text-mute text-[11px] tracking-wider uppercase font-medium">Valais Alpine Sector · 3,200m</span>
+      {/* Top Visual Engine & Perspective Controls Bar */}
+      <div className="relative z-20 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+        <div className="flex items-center gap-2 pointer-events-auto bg-surface/80 backdrop-blur-md p-1 rounded-full border border-white/[0.08] text-xs font-mono">
+          <button
+            onClick={() => {
+              sound.playClick();
+              setHeroMode('3d-mesh');
+            }}
+            className={`px-3 py-1 rounded-full transition-all flex items-center gap-1.5 ${
+              heroMode === '3d-mesh'
+                ? 'bg-signal text-deep-ground font-bold shadow-sm'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            <Mountain className="w-3.5 h-3.5" />
+            <span>3D Massif</span>
+          </button>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setHeroMode('mapbox-3d');
+            }}
+            className={`px-3 py-1 rounded-full transition-all flex items-center gap-1.5 ${
+              heroMode === 'mapbox-3d'
+                ? 'bg-signal text-deep-ground font-bold shadow-sm'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            <span>Mapbox 3D</span>
+          </button>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setHeroMode('svg-plate01');
+            }}
+            className={`px-3 py-1 rounded-full transition-all flex items-center gap-1.5 ${
+              heroMode === 'svg-plate01'
+                ? 'bg-signal text-deep-ground font-bold shadow-sm'
+                : 'text-mute hover:text-ink'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Contours</span>
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 pointer-events-auto bg-surface/70 backdrop-blur-md p-1 rounded-full border border-white/[0.08] text-xs font-mono">
-          <button
-            onClick={() => setHeroMode('3d-mesh')}
-            className={`px-3 py-1 rounded-full transition-all ${
-              heroMode === '3d-mesh'
-                ? 'bg-signal text-deep-ground font-bold'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            3D Massif
-          </button>
-          <button
-            onClick={() => setHeroMode('mapbox-3d')}
-            className={`px-3 py-1 rounded-full transition-all ${
-              heroMode === 'mapbox-3d'
-                ? 'bg-signal text-deep-ground font-bold'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            Mapbox 3D
-          </button>
-          <button
-            onClick={() => setHeroMode('svg-plate01')}
-            className={`px-3 py-1 rounded-full transition-all ${
-              heroMode === 'svg-plate01'
-                ? 'bg-signal text-deep-ground font-bold'
-                : 'text-mute hover:text-ink'
-            }`}
-          >
-            Contours
-          </button>
-
-          {heroMode === '3d-mesh' && (
+        {heroMode === '3d-mesh' && (
+          <div className="flex items-center gap-2 font-mono text-xs text-mute bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/[0.08] pointer-events-auto">
+            <span className="text-[10px] text-mute uppercase mr-1 hidden sm:inline">Camera:</span>
             <button
-              onClick={() => setIsRotating(!isRotating)}
-              className="px-2 py-1 text-mute hover:text-ink transition-colors border-l border-white/10 ml-1"
-              title="Toggle rotation"
+              onClick={() => {
+                sound.playClick();
+                setPerspective('oblique');
+              }}
+              className={`px-2 py-0.5 rounded-full ${perspective === 'oblique' ? 'bg-signal text-deep-ground font-bold' : 'text-mute hover:text-ink'}`}
+            >
+              Oblique
+            </button>
+            <button
+              onClick={() => {
+                sound.playClick();
+                setPerspective('topdown');
+              }}
+              className={`px-2 py-0.5 rounded-full ${perspective === 'topdown' ? 'bg-signal text-deep-ground font-bold' : 'text-mute hover:text-ink'}`}
+            >
+              Top-Down
+            </button>
+            <button
+              onClick={() => {
+                sound.playClick();
+                setPerspective('horizon');
+              }}
+              className={`px-2 py-0.5 rounded-full ${perspective === 'horizon' ? 'bg-signal text-deep-ground font-bold' : 'text-mute hover:text-ink'}`}
+            >
+              Col Horizon
+            </button>
+            <button
+              onClick={() => {
+                sound.playClick();
+                setIsRotating(!isRotating);
+              }}
+              className="text-signal flex items-center gap-1 hover:text-ink transition-colors px-1 border-l border-white/10 ml-1"
+              title="Toggle automatic rotation"
             >
               {isRotating ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Main Visual 3D Canvas */}
       <div className="absolute inset-0 z-0">
         {heroMode === '3d-mesh' && (
           webglSupported ? (
-            <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+            <div
+              ref={containerRef}
+              className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
+              title="Click and drag to rotate terrain in 3D"
+            />
           ) : (
             <SVGRidgeHeroFallback />
           )
@@ -362,10 +474,10 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
         {heroMode === 'svg-plate01' && <SVGRidgeHeroFallback />}
       </div>
 
-      {/* Subtle Bottom Scrim for effortless readability without boxy cards */}
+      {/* Subtle Bottom Scrim for effortless readability */}
       <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-deep-ground via-deep-ground/60 to-transparent pointer-events-none z-0" />
 
-      {/* FLOATING TACTICAL PINS ON 3D TERRAIN (Matching Reference Image) */}
+      {/* FLOATING TACTICAL PINS ON 3D TERRAIN */}
       <div className="absolute inset-0 pointer-events-none z-10 hidden md:block">
         {/* Node A1 (Online - Peak) */}
         <div className="absolute right-[24%] top-[24%] flex items-center gap-3 animate-fadeIn">
@@ -414,7 +526,6 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
 
         {/* Top Right Tactical Altitude & Compass HUD */}
         <div className="absolute right-8 top-16 text-right font-mono text-xs space-y-1">
-          {/* Compass Rose */}
           <div className="w-12 h-12 rounded-full border border-white/20 ml-auto flex items-center justify-center relative mb-2">
             <span className="text-[9px] text-signal font-bold absolute top-0.5">N</span>
             <div className="w-2 h-2 rounded-full bg-signal/60" />
@@ -424,27 +535,14 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
           <div className="text-xl font-black text-ink">3,420 m</div>
           <div className="text-[10px] uppercase text-mute tracking-widest">ALTITUDE</div>
           <div className="text-[11px] text-signal font-semibold pt-1">32.4871° N, 76.3095° E</div>
-
-          {/* Right Rail Indexes */}
-          <div className="pt-4 space-y-1 text-[11px] text-mute">
-            <div className="flex items-center justify-end gap-2 text-ink">
-              <span>TERRAIN</span> <span className="text-signal font-bold">01</span>
-            </div>
-            <div className="flex items-center justify-end gap-2">
-              <span>LINKS</span> <span>02</span>
-            </div>
-            <div className="flex items-center justify-end gap-2">
-              <span>MESSAGES</span> <span>03</span>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Hero Narrative Overlay & Scene Controls */}
       <div className="relative z-10 px-6 sm:px-12 pb-12 sm:pb-16 max-w-4xl mt-auto pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface/60 border border-white/[0.08] text-signal font-mono text-[11px] tracking-wider uppercase mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-signal" />
-          <span>Mountain Safety · Offline Mesh Network</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface/60 border border-white/[0.08] text-signal font-mono text-[11px] tracking-wider uppercase mb-4 pointer-events-auto">
+          <span className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+          <span>{curScene.badge}</span>
         </div>
 
         <h1 className="font-sans font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-ink leading-[1.08]">
@@ -454,22 +552,23 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
         </h1>
 
         <p className="mt-4 text-sm sm:text-base text-mute font-sans font-normal max-w-xl leading-relaxed">
-          When granite ridges block cellular and satellite links, Cairn automatically holds and hops your team’s messages across peak relays — guaranteeing zero lost dispatches.
+          {curScene.subtext}
         </p>
 
-        {/* Clean Action Buttons */}
+        {/* Action Buttons & Scene Stepper */}
         <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
           <a
             href="/console"
+            onClick={() => sound.playClick()}
             className="px-6 py-3.5 rounded-full font-sans text-xs font-semibold uppercase tracking-wider bg-signal text-deep-ground hover:bg-signal/90 transition-all flex items-center gap-2 shadow-glow-signal group"
           >
             <span>Explore The Console</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </a>
 
-          {/* Watch Simulation Pill Button */}
           <button
             onClick={() => {
+              sound.playClick();
               const el = document.getElementById('mesh-lab');
               el?.scrollIntoView({ behavior: 'smooth' });
             }}
@@ -478,20 +577,21 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
             <div className="w-5 h-5 rounded-full bg-signal/20 text-signal flex items-center justify-center">
               <Play className="w-2.5 h-2.5 fill-current" />
             </div>
-            <span>Watch Simulation · 02:18</span>
+            <span>Watch Simulation</span>
           </button>
 
-          {/* Scene Dots */}
+          {/* Scene Stepper Buttons */}
           <div className="flex items-center gap-1.5 bg-surface/60 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/[0.08] sm:ml-auto">
             {scenes.map((s, i) => (
               <button
                 key={s.id}
-                onClick={() => setActiveScene(i)}
+                onClick={() => handleSceneClick(i)}
                 className={`px-2.5 py-0.5 rounded-full font-mono text-xs transition-all ${
                   activeScene === i
                     ? 'bg-signal text-deep-ground font-bold shadow-sm'
                     : 'text-mute hover:text-ink'
                 }`}
+                title={s.title}
               >
                 0{i + 1}
               </button>
@@ -499,7 +599,7 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
           </div>
         </div>
 
-        {/* 3 Core Value Pillars in Clean, Human Language */}
+        {/* 3 Core Value Pillars */}
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08] pointer-events-auto">
           <div className="flex items-start gap-2.5">
             <Radio className="w-4 h-4 text-signal shrink-0 mt-0.5" />
