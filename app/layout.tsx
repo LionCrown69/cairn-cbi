@@ -3,9 +3,10 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: 'CAIRN — Offline-First Alpine Mesh Communication',
+  metadataBase: new URL('https://cairn-cbi.vercel.app'),
+  title: 'CAIRN — Offline-First Alpine Mesh Communication (Team CBI)',
   description:
-    'A synthetic-scenario platform for team communication, store-and-forward messaging, visible network topology, and AI situational awareness in mountain terrain with zero cellular connectivity.',
+    'A synthetic-scenario platform for team communication, store-and-forward messaging, visible network topology, and AI situational awareness in mountain terrain with zero cellular connectivity. Built by Team CBI.',
   keywords: [
     'mesh networking',
     'offline communication',
@@ -13,8 +14,10 @@ export const metadata: Metadata = {
     'store and forward',
     'topographic line of sight',
     'delay tolerant networking',
+    'Team CBI',
+    'Gemini 2.5 Flash',
   ],
-  authors: [{ name: 'CAIRN Systems Architecture' }],
+  authors: [{ name: 'Team CBI' }],
 };
 
 export default function RootLayout({
