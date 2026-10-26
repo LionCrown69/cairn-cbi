@@ -3,51 +3,58 @@
 import React from "react";
 import Link from "next/link";
 import Timeline from "@/components/ui/timeline";
-import { ArrowRight, Radio, Sparkles, Trophy, Cpu, Mountain, ShieldCheck } from "lucide-react";
+import { ArrowRight, Radio, Sparkles, Trophy, Cpu, Mountain, ShieldCheck, Moon, Award } from "lucide-react";
 
 export default function TimelineDemo() {
   return (
     <main className="bg-deep-ground text-ink min-h-screen flex flex-col">
       {/* Lead-in Hero section */}
       <section className="pt-24 pb-16 px-6 sm:px-12 max-w-5xl mx-auto w-full text-center space-y-6 border-b border-white/[0.08]">
-        <div className="inline-flex items-center gap-2 text-xs font-mono text-signal uppercase tracking-widest mx-auto">
-          <span className="w-1.5 h-1.5 rounded-full bg-signal" />
-          <span>Sprint Chronicle · 48 Hours</span>
+        {/* Team CBI Official Submission Badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-signal/15 border border-signal/40 text-xs font-mono text-signal uppercase tracking-widest mx-auto shadow-sm">
+          <Trophy className="w-3.5 h-3.5 text-signal" />
+          <span className="font-extrabold">TEAM CBI · FINAL SUBMISSION AT 04:00 PM (DAY 2)</span>
         </div>
 
         <h1 className="max-w-4xl mx-auto text-4xl sm:text-6xl font-display font-extrabold uppercase tracking-tight text-ink">
-          The 2-Day Timeline.
+          The 48-Hour Sprint Chronicle.
         </h1>
 
-        <p className="max-w-xl mx-auto text-xs sm:text-sm leading-relaxed text-mute font-sans">
-          From intake at 12:00 PM through 3D terrain modeling, delay-tolerant mesh routing, verifiable AI reasoning, to final submission.
+        <p className="max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed text-mute font-sans">
+          Engineered by <strong className="text-ink">Team CBI</strong> from Day 1 research at 12:00 PM, through an intense overnight sprint (Blender 3D photogrammetric modeling & tactile Web Audio synthesis), to Day 2 live Google Gemini 2.5 Flash neural integration. Official submission cut at 04:00 PM sharp.
         </p>
 
         {/* Quick Stat Highlights */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 max-w-3xl mx-auto">
-          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
-            <span className="text-[10px] font-mono text-mute uppercase block">Daily Window</span>
-            <span className="text-xs font-mono font-bold text-ink">08:00 AM – 08:00 PM</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-4 max-w-4xl mx-auto">
+          <div className="p-4 rounded-2xl bg-surface/50 border border-white/[0.08] text-left">
+            <span className="text-[10px] font-mono text-mute uppercase block">Engineering Squad</span>
+            <span className="text-sm font-mono font-extrabold text-signal flex items-center gap-1.5 mt-0.5">
+              <span>TEAM CBI</span>
+              <Award className="w-3.5 h-3.5" />
+            </span>
           </div>
-          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
+          <div className="p-4 rounded-2xl bg-surface/50 border border-white/[0.08] text-left">
             <span className="text-[10px] font-mono text-mute uppercase block">Day 1 Kickoff</span>
-            <span className="text-xs font-mono font-bold text-signal">12:00 PM Intake</span>
+            <span className="text-sm font-mono font-bold text-ink mt-0.5 block">12:00 PM Intake</span>
           </div>
-          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
-            <span className="text-[10px] font-mono text-mute uppercase block">Day 2 Kickoff</span>
-            <span className="text-xs font-mono font-bold text-caution">10:00 AM Standup</span>
+          <div className="p-4 rounded-2xl bg-surface/50 border border-white/[0.08] text-left">
+            <span className="text-[10px] font-mono text-cyan-300/80 uppercase block flex items-center gap-1">
+              <Moon className="w-2.5 h-2.5 text-cyan-300" />
+              <span>Night Sprint</span>
+            </span>
+            <span className="text-sm font-mono font-bold text-cyan-300 mt-0.5 block">22:30 – 06:00</span>
           </div>
-          <div className="p-3.5 rounded-2xl bg-surface/40 border border-white/[0.06] text-left">
-            <span className="text-[10px] font-mono text-mute uppercase block">Final Cut</span>
-            <span className="text-xs font-mono font-bold text-signal">08:00 PM Release</span>
+          <div className="p-4 rounded-2xl bg-surface/50 border border-signal/30 text-left bg-signal/[0.04]">
+            <span className="text-[10px] font-mono text-signal uppercase block font-bold">Final Cut (Day 2)</span>
+            <span className="text-sm font-mono font-extrabold text-signal mt-0.5 block">04:00 PM Sharp</span>
           </div>
         </div>
       </section>
 
       {/* Main Interactive Timeline */}
       <Timeline
-        title="Engineering Sprint Log"
-        subtitle="Full 14-sprint chronological breakdown across Day 1 and Day 2. Filter by Day or toggle between Track and Stream views."
+        title="Team CBI Engineering Log"
+        subtitle="14 verified engineering milestones across Day 1, Night Operations, and Day 2. Filter by phase to inspect technical deliverables."
         showDayFilters={true}
         initialDayFilter="all"
       />
@@ -55,51 +62,52 @@ export default function TimelineDemo() {
       {/* Summary / Delivery Showcase Section */}
       <section className="py-20 px-6 sm:px-12 max-w-6xl mx-auto w-full space-y-12">
         <div className="text-center space-y-3">
-          <span className="px-3 py-1 rounded bg-surface border border-line text-xs font-mono text-signal uppercase tracking-wider inline-block">
-            Production Readiness Review
+          <span className="px-3.5 py-1 rounded-full bg-signal/15 border border-signal/30 text-xs font-mono text-signal uppercase tracking-wider inline-flex items-center gap-1.5 font-bold">
+            <Sparkles className="w-3 h-3" />
+            <span>Mission Handover · Team CBI</span>
           </span>
           <h2 className="font-display font-extrabold text-4xl sm:text-5xl uppercase text-ink">
             Mission Accomplished.
           </h2>
-          <p className="text-mute font-sans text-xs sm:text-sm max-w-xl mx-auto">
-            14 technical milestones delivered across the 2-day hackathon window with full test coverage and live operational console.
+          <p className="text-mute font-sans text-xs sm:text-sm max-w-2xl mx-auto">
+            14 technical milestones delivered across the 48-hour hackathon window by Team CBI. Submitted at 04:00 PM with 100% build pass rate, zero errors, and live operational demonstration.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-surface/30 border border-white/[0.06] space-y-3">
-            <div className="w-9 h-9 rounded-full bg-signal/10 flex items-center justify-center text-signal">
-              <Mountain className="w-4 h-4" />
+          <div className="p-6 rounded-2xl bg-surface/40 border border-white/[0.08] space-y-3 hover:border-signal/30 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-signal/15 flex items-center justify-center text-signal">
+              <Mountain className="w-5 h-5" />
             </div>
             <h3 className="font-sans font-bold text-base text-ink">
-              Real & Procedural 3D Terrain
+              Blender 3D Terrains & Draco Compression
             </h3>
             <p className="text-xs text-mute leading-relaxed font-sans">
-              Seamlessly switch between sculpted Three.js WebGL mountain relief and live Mapbox 3D satellite elevation over the Valais Alps.
+              4 custom Blender GLB relief models (Knife Edge Ridge, Cirque Amphitheater, Stepped Plateau, Multi-Ridge) with Draco 3D geometry compression and WebGL orbit cameras.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-surface/30 border border-white/[0.06] space-y-3">
-            <div className="w-9 h-9 rounded-full bg-caution/10 flex items-center justify-center text-caution">
-              <Cpu className="w-4 h-4" />
+          <div className="p-6 rounded-2xl bg-surface/40 border border-white/[0.08] space-y-3 hover:border-amber-500/30 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-400">
+              <Cpu className="w-5 h-5" />
             </div>
             <h3 className="font-sans font-bold text-base text-ink">
-              Verifiable AI Reasoning
+              Live Gemini 2.5 Flash & Strict Guardrails
             </h3>
             <p className="text-xs text-mute leading-relaxed font-sans">
-              Strict numeric whitelist guardrails eliminate hallucinations. Zero ungrounded casualty numbers or fabricated elevation metrics.
+              Live Google Gemini 2.5 Flash neural synthesis answering general inquiries with depth and military RF physics, while strictly enforcing peaceful search-and-rescue guardrails.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-surface/30 border border-white/[0.06] space-y-3">
-            <div className="w-9 h-9 rounded-full bg-signal/10 flex items-center justify-center text-signal">
-              <ShieldCheck className="w-4 h-4" />
+          <div className="p-6 rounded-2xl bg-surface/40 border border-white/[0.08] space-y-3 hover:border-cyan-500/30 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-cyan-500/15 flex items-center justify-center text-cyan-300">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <h3 className="font-sans font-bold text-base text-ink">
-              Store-and-Forward Resilience
+              Store-and-Forward Delay-Tolerant Mesh
             </h3>
             <p className="text-xs text-mute leading-relaxed font-sans">
-              Delay-tolerant message queueing ensures zero dropped packets even during severe mountain ridge occlusions.
+              Dynamic multi-hop mesh routing with FIFO store-and-forward packet buffers, ensuring zero dropped messages during severe mountain ridge dropouts.
             </p>
           </div>
         </div>
@@ -110,14 +118,14 @@ export default function TimelineDemo() {
             href="/console"
             className="px-6 py-2.5 rounded-full bg-signal text-deep-ground font-mono font-bold text-xs uppercase tracking-wider hover:bg-signal/90 shadow-glow-signal transition-all flex items-center gap-2"
           >
-            <span>Launch Field Console</span>
+            <span>Launch Live Console</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/"
-            className="px-6 py-2.5 rounded-full bg-surface/50 border border-white/[0.08] text-ink font-mono text-xs uppercase tracking-wider hover:bg-white/[0.04] transition-all"
+            className="px-6 py-2.5 rounded-full bg-surface/60 border border-white/[0.08] text-ink font-mono text-xs uppercase tracking-wider hover:bg-white/[0.05] transition-all"
           >
-            Back to Mission Overview
+            Explore Mission Story
           </Link>
         </div>
       </section>
