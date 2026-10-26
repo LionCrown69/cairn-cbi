@@ -78,7 +78,7 @@ export default function StoryPage() {
             willChange: 'transform',
           }}
         >
-          <WebGLTerrainHero />
+          <WebGLTerrainHero hideNarrativeOverlay={true} />
         </div>
 
         {/* Parallax Depth Layer 2: Ethereal Gradient Mist Vignette */}

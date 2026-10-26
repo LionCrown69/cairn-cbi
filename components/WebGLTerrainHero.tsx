@@ -25,9 +25,10 @@ import { sound } from '@/lib/soundEffects';
 
 interface Props {
   onExploreConsole?: () => void;
+  hideNarrativeOverlay?: boolean;
 }
 
-export default function WebGLTerrainHero({ onExploreConsole }: Props) {
+export default function WebGLTerrainHero({ onExploreConsole, hideNarrativeOverlay = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [webglSupported, setWebglSupported] = useState(true);
   const [activeScene, setActiveScene] = useState<number>(0);
@@ -539,105 +540,107 @@ export default function WebGLTerrainHero({ onExploreConsole }: Props) {
       </div>
 
       {/* Hero Narrative Overlay & Scene Controls */}
-      <div className="relative z-10 px-6 sm:px-12 pb-12 sm:pb-16 max-w-4xl mt-auto pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface/60 border border-white/[0.08] text-signal font-mono text-[11px] tracking-wider uppercase mb-4 pointer-events-auto">
-          <span className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
-          <span>{curScene.badge}</span>
-        </div>
+      {!hideNarrativeOverlay && (
+        <div className="relative z-10 px-6 sm:px-12 pb-12 sm:pb-16 max-w-4xl mt-auto pointer-events-none">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface/60 border border-white/[0.08] text-signal font-mono text-[11px] tracking-wider uppercase mb-4 pointer-events-auto">
+            <span className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+            <span>{curScene.badge}</span>
+          </div>
 
-        <h1 className="font-sans font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-ink leading-[1.08]">
-          No signal.
-          <br />
-          <span className="text-signal font-light">Still connected.</span>
-        </h1>
+          <h1 className="font-sans font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-ink leading-[1.08]">
+            No signal.
+            <br />
+            <span className="text-signal font-light">Still connected.</span>
+          </h1>
 
-        <p className="mt-4 text-sm sm:text-base text-mute font-sans font-normal max-w-xl leading-relaxed">
-          {curScene.subtext}
-        </p>
+          <p className="mt-4 text-sm sm:text-base text-mute font-sans font-normal max-w-xl leading-relaxed">
+            {curScene.subtext}
+          </p>
 
-        {/* Action Buttons & Scene Stepper */}
-        <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
-          <a
-            href="/console"
-            onClick={() => sound.playClick()}
-            className="px-6 py-3.5 rounded-full font-sans text-xs font-semibold uppercase tracking-wider bg-signal text-deep-ground hover:bg-signal/90 transition-all flex items-center gap-2 shadow-glow-signal group"
-          >
-            <span>Explore The Console</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </a>
+          {/* Action Buttons & Scene Stepper */}
+          <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
+            <a
+              href="/console"
+              onClick={() => sound.playClick()}
+              className="px-6 py-3.5 rounded-full font-sans text-xs font-semibold uppercase tracking-wider bg-signal text-deep-ground hover:bg-signal/90 transition-all flex items-center gap-2 shadow-glow-signal group"
+            >
+              <span>Explore The Console</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </a>
 
-          <button
-            onClick={() => {
-              sound.playClick();
-              const el = document.getElementById('mesh-lab');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="px-5 py-3.5 rounded-full font-sans text-xs font-medium uppercase tracking-wider bg-surface/60 border border-white/[0.1] text-ink hover:text-signal hover:border-signal/40 transition-all flex items-center gap-2.5 backdrop-blur-md"
-          >
-            <div className="w-5 h-5 rounded-full bg-signal/20 text-signal flex items-center justify-center">
-              <Play className="w-2.5 h-2.5 fill-current" />
+            <button
+              onClick={() => {
+                sound.playClick();
+                const el = document.getElementById('mesh-lab');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-5 py-3.5 rounded-full font-sans text-xs font-medium uppercase tracking-wider bg-surface/60 border border-white/[0.1] text-ink hover:text-signal hover:border-signal/40 transition-all flex items-center gap-2.5 backdrop-blur-md"
+            >
+              <div className="w-5 h-5 rounded-full bg-signal/20 text-signal flex items-center justify-center">
+                <Play className="w-2.5 h-2.5 fill-current" />
+              </div>
+              <span>Watch Simulation</span>
+            </button>
+
+            {/* Scene Stepper Buttons */}
+            <div className="flex items-center gap-1.5 bg-surface/60 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/[0.08] sm:ml-auto">
+              {scenes.map((s, i) => (
+                <button
+                  key={s.id}
+                  onClick={() => handleSceneClick(i)}
+                  className={`px-2.5 py-0.5 rounded-full font-mono text-xs transition-all ${
+                    activeScene === i
+                      ? 'bg-signal text-deep-ground font-bold shadow-sm'
+                      : 'text-mute hover:text-ink'
+                  }`}
+                  title={s.title}
+                >
+                  0{i + 1}
+                </button>
+              ))}
             </div>
-            <span>Watch Simulation</span>
-          </button>
+          </div>
 
-          {/* Scene Stepper Buttons */}
-          <div className="flex items-center gap-1.5 bg-surface/60 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/[0.08] sm:ml-auto">
-            {scenes.map((s, i) => (
-              <button
-                key={s.id}
-                onClick={() => handleSceneClick(i)}
-                className={`px-2.5 py-0.5 rounded-full font-mono text-xs transition-all ${
-                  activeScene === i
-                    ? 'bg-signal text-deep-ground font-bold shadow-sm'
-                    : 'text-mute hover:text-ink'
-                }`}
-                title={s.title}
-              >
-                0{i + 1}
-              </button>
-            ))}
+          {/* 3 Core Value Pillars */}
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08] pointer-events-auto">
+            <div className="flex items-start gap-2.5">
+              <Radio className="w-4 h-4 text-signal shrink-0 mt-0.5" />
+              <div>
+                <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
+                  Offline-First
+                </span>
+                <span className="text-xs text-mute font-sans font-light leading-snug">
+                  Messages stay safe in device memory until a relay is in reach.
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <Mountain className="w-4 h-4 text-signal shrink-0 mt-0.5" />
+              <div>
+                <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
+                  Terrain Awareness
+                </span>
+                <span className="text-xs text-mute font-sans font-light leading-snug">
+                  Simulates 3,000m ridge shadows to reveal occluded valleys.
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <GitFork className="w-4 h-4 text-signal shrink-0 mt-0.5" />
+              <div>
+                <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
+                  Intelligent Routing
+                </span>
+                <span className="text-xs text-mute font-sans font-light leading-snug">
+                  Autonomous multi-hop mesh hops over granite peaks to base camp.
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* 3 Core Value Pillars */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/[0.08] pointer-events-auto">
-          <div className="flex items-start gap-2.5">
-            <Radio className="w-4 h-4 text-signal shrink-0 mt-0.5" />
-            <div>
-              <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
-                Offline-First
-              </span>
-              <span className="text-xs text-mute font-sans font-light leading-snug">
-                Messages stay safe in device memory until a relay is in reach.
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2.5">
-            <Mountain className="w-4 h-4 text-signal shrink-0 mt-0.5" />
-            <div>
-              <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
-                Terrain Awareness
-              </span>
-              <span className="text-xs text-mute font-sans font-light leading-snug">
-                Simulates 3,000m ridge shadows to reveal occluded valleys.
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2.5">
-            <GitFork className="w-4 h-4 text-signal shrink-0 mt-0.5" />
-            <div>
-              <span className="block font-sans text-xs font-semibold uppercase tracking-wider text-ink">
-                Intelligent Routing
-              </span>
-              <span className="text-xs text-mute font-sans font-light leading-snug">
-                Autonomous multi-hop mesh hops over granite peaks to base camp.
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
