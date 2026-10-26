@@ -1019,6 +1019,7 @@ const AIThinkingOrbAndInput = React.forwardRef<AIThinkingOrbHandle, MorphOrbProp
 
             <button
               type="submit"
+              aria-label="Send query"
               disabled={phase !== 'idle' || !inputValue.trim()}
               className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                 isTyping

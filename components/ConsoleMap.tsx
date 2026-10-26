@@ -388,7 +388,6 @@ export default function ConsoleMap() {
                     onClick={() => selectNode(node.id)}
                     tabIndex={0}
                     role="button"
-                    aria-label={`Node ${node.callsign}`}
                     onKeyDown={e => {
                       if (e.key === 'Enter') selectNode(node.id);
                     }}

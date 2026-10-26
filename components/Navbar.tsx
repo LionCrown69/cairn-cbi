@@ -26,14 +26,16 @@ import {
 import { useMeshStore } from '@/lib/store';
 import { sound } from '@/lib/soundEffects';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
+import { WhatWorksSheet } from '@/components/ui/what-works-sheet';
+import { IOSDropdown, DropdownItem } from '@/components/ui/ios-dropdown';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { nodes, messages, systemAnnouncements, setNodeStatus, simulateSeverance, healTopology } = useMeshStore();
   const [showHelp, setShowHelp] = useState(false);
+  const [showWhatWorks, setShowWhatWorks] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [soundActive, setSoundActive] = useState(false);
-  const [showScenarios, setShowScenarios] = useState(false);
   const [utcTime, setUtcTime] = useState<string>('');
 
   useEffect(() => {
@@ -55,9 +57,9 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Story', icon: Radio },
     { href: '/console', label: 'Field Console', icon: Compass },
-    { href: '/dispatch', label: 'Dispatch Hub', icon: Send },
-    { href: '/timeline', label: 'Timeline', icon: Layers },
+    { href: '/dispatch', label: 'Dispatch', icon: Send },
     { href: '/method', label: 'Method', icon: Sliders },
+    { href: '/timeline', label: 'Timeline', icon: Layers },
     { href: '/login', label: 'Auth', icon: UserCheck },
   ];
 
@@ -70,9 +72,7 @@ export default function Navbar() {
     }
   };
 
-  const runScenario = (scenario: 'storm' | 'heal' | 'nominal') => {
-    sound.playClick();
-    setShowScenarios(false);
+  const handleScenarioSelect = (scenario: 'storm' | 'heal' | 'nominal') => {
     if (scenario === 'storm') {
       simulateSeverance();
       sound.playAlert();
@@ -84,6 +84,27 @@ export default function Navbar() {
       sound.playClick();
     }
   };
+
+  const scenarioItems: DropdownItem<'storm' | 'heal' | 'nominal'>[] = [
+    {
+      value: 'storm',
+      label: 'Tempest Severance',
+      description: 'Drops North Ridge relay; buffers packets in queue',
+      icon: AlertTriangle,
+    },
+    {
+      value: 'heal',
+      label: 'Deploy Saddle Col Relay',
+      description: 'Heals topology; flushes queued packets',
+      icon: CheckCircle2,
+    },
+    {
+      value: 'nominal',
+      label: 'Reset Nominal Mesh',
+      description: 'Restores all 6 stations online',
+      icon: Radio,
+    },
+  ];
 
   return (
     <>
@@ -151,55 +172,28 @@ export default function Navbar() {
               <span className="text-ink font-semibold">{utcTime || '00:00:00 UTC'}</span>
             </div>
 
-            {/* Quick Simulation Scenarios Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowScenarios(!showScenarios)}
-                className="px-2.5 py-1 rounded-full border border-white/[0.08] bg-surface hover:border-signal/50 text-xs font-mono text-ink flex items-center gap-1.5 transition-all"
-                title="Trigger simulated terrain conditions"
-              >
-                <Zap className="w-3.5 h-3.5 text-signal" />
-                <span className="hidden sm:inline">Scenarios</span>
-              </button>
+            {/* What Works Today Sheet Trigger */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                setShowWhatWorks(true);
+              }}
+              className="px-2.5 py-1 rounded-full border border-signal/30 bg-signal/10 hover:bg-signal/20 text-xs font-mono text-signal flex items-center gap-1.5 transition-all active:scale-[0.97]"
+              title="Open verified capabilities sheet"
+              aria-label="Open What Works Today status sheet"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+              <span className="hidden sm:inline">What works today</span>
+              <span className="sm:hidden">Status</span>
+            </button>
 
-              {showScenarios && (
-                <div className="absolute right-0 mt-2 w-72 rounded-xl bg-surface border border-line p-2 shadow-2xl z-50 font-mono text-xs space-y-1 animate-fadeIn">
-                  <div className="px-2 py-1 text-[10px] text-mute uppercase font-bold tracking-wider border-b border-line/60">
-                    Simulation Injections
-                  </div>
-                  <button
-                    onClick={() => runScenario('storm')}
-                    className="w-full text-left p-2 rounded hover:bg-ground/70 flex items-start gap-2 text-caution transition-colors"
-                  >
-                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-                    <div>
-                      <div className="font-bold text-ink">Alpine Tempest Severance</div>
-                      <div className="text-[10px] text-mute font-sans">Drops Ridge Relay 1; buffers packets in local queue</div>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => runScenario('heal')}
-                    className="w-full text-left p-2 rounded hover:bg-ground/70 flex items-start gap-2 text-signal transition-colors"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
-                    <div>
-                      <div className="font-bold text-ink">Deploy Saddle Col Relay</div>
-                      <div className="text-[10px] text-mute font-sans">Heals topology; flushes store-and-forward messages</div>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => runScenario('nominal')}
-                    className="w-full text-left p-2 rounded hover:bg-ground/70 flex items-start gap-2 text-ink transition-colors"
-                  >
-                    <Radio className="w-4 h-4 mt-0.5 shrink-0 text-mute" />
-                    <div>
-                      <div className="font-bold text-ink">Reset Nominal Mesh</div>
-                      <div className="text-[10px] text-mute font-sans">Restore all 6 alpine stations online</div>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
+            {/* Quick Simulation Scenarios Dropdown */}
+            <IOSDropdown
+              triggerLabel="Scenarios"
+              triggerIcon={Zap}
+              items={scenarioItems}
+              onSelect={handleScenarioSelect}
+            />
 
             {/* Tactical Audio Toggle */}
             <button
@@ -303,6 +297,7 @@ export default function Navbar() {
       </header>
 
       {showHelp && <KeyboardShortcutsModal onClose={() => setShowHelp(false)} />}
+      <WhatWorksSheet open={showWhatWorks} onOpenChange={setShowWhatWorks} />
     </>
   );
 }

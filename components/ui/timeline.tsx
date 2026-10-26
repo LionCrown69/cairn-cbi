@@ -4,6 +4,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { sound } from '@/lib/soundEffects';
+import { SegmentedControl } from '@/components/ui/segmented-control';
 
 export type HackathonMilestone = {
   id: string;
@@ -233,14 +234,16 @@ export default function Timeline({
   initialDayFilter = 'all',
   className,
 }: TimelineProps) {
-  const [dayFilter, setDayFilter] = useState<'all' | 1 | 2>(initialDayFilter);
+  const [dayFilter, setDayFilter] = useState<'all' | '1' | '2'>(
+    initialDayFilter === 1 ? '1' : initialDayFilter === 2 ? '2' : 'all'
+  );
 
   const filteredMilestones = useMemo(() => {
     if (dayFilter === 'all') return HACKATHON_SPRINT_DATA;
-    return HACKATHON_SPRINT_DATA.filter((m) => m.day === dayFilter);
+    return HACKATHON_SPRINT_DATA.filter((m) => String(m.day) === dayFilter);
   }, [dayFilter]);
 
-  const handleFilterChange = useCallback((filter: 'all' | 1 | 2) => {
+  const handleFilterChange = useCallback((filter: 'all' | '1' | '2') => {
     sound.playClick();
     setDayFilter(filter);
   }, []);
@@ -262,35 +265,15 @@ export default function Timeline({
 
         {/* Day Filters */}
         {showDayFilters && (
-          <div className="flex items-center gap-1.5 p-1 rounded-full bg-surface/60 border border-white/[0.08] text-xs font-mono shrink-0">
-            <button
-              onClick={() => handleFilterChange('all')}
-              className={cn(
-                'px-3 py-1 rounded-full transition-all',
-                dayFilter === 'all' ? 'bg-signal text-deep-ground font-bold' : 'text-mute hover:text-ink'
-              )}
-            >
-              All (14)
-            </button>
-            <button
-              onClick={() => handleFilterChange(1)}
-              className={cn(
-                'px-3 py-1 rounded-full transition-all',
-                dayFilter === 1 ? 'bg-signal text-deep-ground font-bold' : 'text-mute hover:text-ink'
-              )}
-            >
-              Day 1 (7)
-            </button>
-            <button
-              onClick={() => handleFilterChange(2)}
-              className={cn(
-                'px-3 py-1 rounded-full transition-all',
-                dayFilter === 2 ? 'bg-signal text-deep-ground font-bold' : 'text-mute hover:text-ink'
-              )}
-            >
-              Day 2 (7)
-            </button>
-          </div>
+          <SegmentedControl
+            value={dayFilter}
+            onChange={(val) => handleFilterChange(val)}
+            options={[
+              { value: 'all', label: 'All', badge: 14 },
+              { value: '1', label: 'Day 1', badge: 7 },
+              { value: '2', label: 'Day 2', badge: 7 },
+            ]}
+          />
         )}
       </div>
 
