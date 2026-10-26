@@ -205,37 +205,55 @@ export class MockProvider implements AIProvider {
   }> {
     const apiKey = ctx.apiKey || process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    // IF an external Gemini API key is configured, call Gemini 1.5 Flash directly
+    // IF an external Gemini API key is configured, call Gemini 2.5 Flash directly
     if (apiKey) {
       try {
-        const systemPrompt = `You are CAIRN Tactical Autonomous Mesh Intelligence Agent.
-You are embedded in an offline-first tactical mountain communication platform.
-CURRENT SECTOR TELEMETRY:
-- Field Stations: ${JSON.stringify(ctx.nodes)}
-- Radio Links: ${JSON.stringify(ctx.links)}
-- Queued Packets (Flash Cache): ${ctx.queuedCount}
-- Confirmed Delivered Packets: ${ctx.deliveredCount}
-- Focused Station: ${ctx.selectedCallsign || 'None'}
-- Topography: Valais Alpine Massif (3,200m crest, 1,900m valley floor, 10m DEM resolution).
+        const systemPrompt = `You are CAIRN Tactical Autonomous Mesh Intelligence (Google Gemini 2.5 Flash).
+You are an advanced tactical field AI embedded in an offline-first alpine mesh communications and telemetry network (Valais Alpine Massif).
 
-OPERATOR QUERY: "${question}"
+CORE DIRECTIVES & INTELLIGENCE BEHAVIOR:
+1. GENERAL KNOWLEDGE & NON-SENSITIVE INQUIRIES:
+   - If the operator asks a general knowledge, geographical, educational, or historical question (e.g. 'What is the capital of India?', 'How high is Mount Everest?'):
+     Answer directly, thoroughly, and intelligently with accurate depth.
+     Include an operational note contextualizing your role in CAIRN.
 
-Respond ONLY with valid JSON in this exact structure:
+2. TACTICAL & MILITARY COMMUNICATIONS QUERIES:
+   - If the operator asks about tactical mesh communications, radio physics, military communications principles, or RF propagation:
+     Provide an in-depth, expert-grade technical explanation of the unclassified principles, radio physics, and operational standards (e.g. MANET, VHF/UHF line-of-sight, store-and-forward, antenna elevation, Fresnel clearance).
+
+3. SAFETY & CLASSIFIED/LETHAL GUARDRAIL:
+   - If the operator asks for classified secrets, kinetic weapon targeting, lethal operations, or sensitive real-world intelligence:
+     Enforce strict guardrails respectfully: 'I am CAIRN Tactical AI. My operational mandate is strictly restricted to search-and-rescue communications, alpine mesh telemetry, and unclassified radio physics. I cannot assist with kinetic weapon systems or classified materials.'
+
+4. ALPINE TELEMETRY QUERIES:
+   - If the operator asks about network nodes, links, batteries, occlusions, or packet buffers, ground your response thoroughly in the provided telemetry matrix.
+
+Always respond ONLY in valid JSON matching this schema:
 {
-  "headline": "UPPERCASE SHORT SITREP TITLE",
-  "report": "In-depth, natural military-grade technical response answering the operator's specific inquiry thoroughly with exact physical facts.",
-  "keyMetrics": [{"label": "METRIC NAME", "value": "VALUE"}],
-  "actionDirective": "Concrete tactical action recommendation for the operator or field unit.",
-  "disclaimer": "AI Tactical SITREP verified against live DEM raycast and telemetry."
+  "headline": string,
+  "report": string,
+  "keyMetrics": [{"label": string, "value": string}],
+  "actionDirective": string,
+  "disclaimer": string
 }`;
 
+        const prompt = `<context>
+Inquiry: "${question}"
+Nodes: ${JSON.stringify(ctx.nodes)}
+Links: ${JSON.stringify(ctx.links)}
+Queued Messages: ${ctx.queuedCount}
+Delivered Messages: ${ctx.deliveredCount}
+Target Callsign: ${ctx.selectedCallsign || 'None'}
+</context>`;
+
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: systemPrompt }] }],
+              contents: [{ parts: [{ text: prompt }] }],
+              systemInstruction: { parts: [{ text: systemPrompt }] },
               generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
             }),
           }
@@ -249,9 +267,9 @@ Respond ONLY with valid JSON in this exact structure:
             return {
               headline: parsed.headline || 'TACTICAL INTELLIGENCE BRIEF',
               report: parsed.report || rawText,
-              keyMetrics: parsed.keyMetrics || [{ label: 'ENGINE', value: 'GEMINI 1.5 FLASH' }],
+              keyMetrics: parsed.keyMetrics || [{ label: 'ENGINE', value: 'GEMINI 2.5 FLASH' }],
               actionDirective: parsed.actionDirective || 'Maintain tactical positioning.',
-              disclaimer: 'Live Gemini 1.5 Flash inference grounded in real-time DEM sector telemetry.',
+              disclaimer: parsed.disclaimer || 'Live Gemini 2.5 Flash inference with verified tactical telemetry guardrails.',
               source: 'gemini',
             };
           }
@@ -417,8 +435,9 @@ export class GeminiAIProvider implements AIProvider {
     this.fallbackProvider = new MockProvider();
   }
 
-  private async callGemini(systemInstruction: string, prompt: string): Promise<string> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelName}:generateContent?key=${this.apiKey}`;
+  private async callGemini(systemInstruction: string, prompt: string, overrideKey?: string): Promise<string> {
+    const key = overrideKey || this.apiKey;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelName}:generateContent?key=${key}`;
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
       systemInstruction: { parts: [{ text: systemInstruction }] },
@@ -602,16 +621,33 @@ Fresnel Loss Margin: ${input.lossMarginDb} dB
     }
   ) {
     try {
-      const systemPrompt = `You are the CAIRN Alpine Situational Intelligence Agent.
-Analyze the mountain search-and-rescue mesh telemetry to answer the operator's query.
-Strict rules:
-1. Ground all reasoning in the provided telemetry and synthetic 10m DEM alpine geometry.
-2. Return ONLY JSON matching schema:
+      const systemPrompt = `You are CAIRN Tactical Autonomous Mesh Intelligence (Google Gemini 2.5 Flash).
+You are an advanced tactical field AI embedded in an offline-first alpine mesh communications and telemetry network (Valais Alpine Massif).
+
+CORE DIRECTIVES & INTELLIGENCE BEHAVIOR:
+1. GENERAL KNOWLEDGE & NON-SENSITIVE INQUIRIES:
+   - If the operator asks a general knowledge, geographical, educational, or historical question (e.g. 'What is the capital of India?', 'How high is Mount Everest?'):
+     Answer directly, thoroughly, and intelligently with accurate depth.
+     Include an operational note contextualizing your role in CAIRN.
+
+2. TACTICAL & MILITARY COMMUNICATIONS QUERIES:
+   - If the operator asks about tactical mesh communications, radio physics, military communications principles, or RF propagation:
+     Provide an in-depth, expert-grade technical explanation of the unclassified principles, radio physics, and operational standards (e.g. MANET, VHF/UHF line-of-sight, store-and-forward, antenna elevation, Fresnel clearance).
+
+3. SAFETY & CLASSIFIED/LETHAL GUARDRAIL:
+   - If the operator asks for classified secrets, kinetic weapon targeting, lethal operations, or sensitive real-world intelligence:
+     Enforce strict guardrails respectfully: 'I am CAIRN Tactical AI. My operational mandate is strictly restricted to search-and-rescue communications, alpine mesh telemetry, and unclassified radio physics. I cannot assist with kinetic weapon systems or classified materials.'
+
+4. ALPINE TELEMETRY QUERIES:
+   - If the operator asks about network nodes, links, batteries, occlusions, or packet buffers, ground your response thoroughly in the provided telemetry matrix.
+
+Always respond ONLY in valid JSON matching this schema:
 {
   "headline": string,
   "report": string,
   "keyMetrics": [{"label": string, "value": string}],
-  "actionDirective": string
+  "actionDirective": string,
+  "disclaimer": string
 }`;
 
       const prompt = `<context>
@@ -623,7 +659,7 @@ Delivered Messages: ${ctx.deliveredCount}
 Target Callsign: ${ctx.selectedCallsign || 'None'}
 </context>`;
 
-      const rawJson = await this.callGemini(systemPrompt, prompt);
+      const rawJson = await this.callGemini(systemPrompt, prompt, ctx.apiKey);
       const parsed = JSON.parse(rawJson);
 
       return {
@@ -631,7 +667,7 @@ Target Callsign: ${ctx.selectedCallsign || 'None'}
         report: parsed.report || '',
         keyMetrics: parsed.keyMetrics || [],
         actionDirective: parsed.actionDirective || 'Maintain baseline patrol frequency.',
-        disclaimer: 'AI Tactical SITREP verified via Google Gemini 2.5 with telemetry guardrails.',
+        disclaimer: parsed.disclaimer || 'Verified via Google Gemini 2.5 Flash with tactical telemetry guardrails.',
         source: 'gemini-2.5-flash',
       };
     } catch (err) {

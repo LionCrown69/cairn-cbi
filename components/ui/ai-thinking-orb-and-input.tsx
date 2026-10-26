@@ -1068,7 +1068,7 @@ const AIThinkingOrbAndInput = React.forwardRef<AIThinkingOrbHandle, MorphOrbProp
               <span>{answerTitle}</span>
             </div>
 
-            <p ref={bodyRef} className="text-xs sm:text-sm font-sans text-ink leading-relaxed line-clamp-4">
+            <p ref={bodyRef} className="text-xs sm:text-sm font-sans text-ink leading-relaxed overflow-y-auto max-h-[130px] pr-1">
               {words.map((w, idx) => (
                 <span key={idx} className="mo-w inline-block mr-1 opacity-0">
                   {w}
